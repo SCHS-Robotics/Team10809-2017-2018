@@ -50,8 +50,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
  * This OpMode illustrates the basics of using the Vuforia engine to determine
  * the identity of Vuforia VuMarks encountered on the field. The code is structured as
  * a LinearOpMode. It shares much structure with {@link ConceptVuforiaNavigation}; we do not here
- * duplicate the core Vuforia documentation found there, but rather instead focus on the
- * differences between the use of Vuforia for navigation vs VuMark identification.
+ * duplicate the core Vuforia documentaiation found there, but rather instead focus on the
+ * differences between the use of Vufor for navigation vs VuMark identification.
  *
  * @see ConceptVuforiaNavigation
  * @see VuforiaLocalizer

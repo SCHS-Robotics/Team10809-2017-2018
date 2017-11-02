@@ -37,9 +37,6 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.I2cAddr;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -51,9 +48,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 
-@TeleOp(name="BetterOmnidirectionalDrive", group="Linear Opmode")  // @Autonomous(...) is the other common choice
+@TeleOp(name="AutonomousOmnidirectionalDriveCorner", group="Linear Opmode")  // @Autonomous(...) is the other common choice
 //@Disabled
-public class BetterOmnidirectionalDrive extends LinearOpMode {
+public class AutonomousOmnidirectionalDriveCorner extends LinearOpMode {
 
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
@@ -61,20 +58,18 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
     DcMotor rightFront = null;
     DcMotor leftBack = null;
     DcMotor rightBack = null;
-    DcMotor verticalLift = null;
-    Servo claw = null;
+    ColorSensor lineSensor = null;
 
 
     //driving variables
-    
-    double deadZone = 0.15;
-    double verticalLiftSpeed = 1;
-    double g1Ly;
-    double g1Lx;
-    double g1Rx;
+
+    boolean stage1 = false;
     boolean left = false;
     boolean right = false;
     boolean center = false;
+    boolean red = true;
+    boolean offPlatform = false;
+    double setTime;
 
 
     public static final String TAG = "Vuforia VuMark Sample";
@@ -98,8 +93,7 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
         rightFront = hardwareMap.dcMotor.get("rightFront");
         leftBack = hardwareMap.dcMotor.get("leftBack");
         rightBack = hardwareMap.dcMotor.get("rightBack");
-        verticalLift = hardwareMap.dcMotor.get("verticalLift");
-        claw = hardwareMap.servo.get("claw");
+        lineSensor = (ColorSensor) hardwareMap.dcMotor.get("lineSensor");
         //color = hardwareMap.colorSensor.get("color");
         //color.setI2cAddress(I2cAddr.create8bit(0x4c));
 
@@ -108,9 +102,6 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
         rightFront.setDirection(DcMotor.Direction.REVERSE);
         leftBack.setDirection(DcMotor.Direction.FORWARD);
         rightBack.setDirection(DcMotor.Direction.REVERSE);
-        verticalLift.setDirection(DcMotor.Direction.FORWARD);
-
-        claw.setPosition(1);
 
         //VUFORIA
 
@@ -141,95 +132,16 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
+        lineSensor.enableLed(true);
+
         // run until the end of the match (driver presses STOP)
-        while (opModeIsActive())
-        {
-            g1Ly = -gamepad1.left_stick_y;
-            g1Lx = gamepad1.left_stick_x;
-            g1Rx = gamepad1.right_stick_x;
+        while (opModeIsActive()) {
 
             telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("X:", " " + g1Lx);
-            telemetry.addData("Y:", " " + g1Ly);
-            telemetry.addData("RX:", " " + g1Rx);
+
             //telemetry.addData("Color: ", color.red() + " " + color.green() + " " + color.blue());
             telemetry.update();
 
-            //for rotation
-            if (g1Rx > deadZone || g1Rx < -deadZone)
-            {
-                leftBack.setPower(g1Rx);
-                rightFront.setPower(-g1Rx);
-                leftFront.setPower(g1Rx);
-                rightBack.setPower(-g1Rx);
-            }
-
-            //for left and right
-            else if (Math.abs(g1Lx) > deadZone && Math.abs(g1Ly) < deadZone)
-            {
-                leftBack.setPower(-g1Lx);
-                rightFront.setPower(-g1Lx);
-                leftFront.setPower(g1Lx);
-                rightBack.setPower(g1Lx);
-            }
-
-            //for up and down
-            else if (Math.abs(g1Ly) > deadZone && Math.abs(g1Lx) < deadZone)
-            {
-                leftBack.setPower(g1Ly);
-                rightFront.setPower(g1Ly);
-                leftFront.setPower(g1Ly);
-                rightBack.setPower(g1Ly);
-            }
-
-            //for top left and bottem right
-            else if (g1Ly > deadZone && g1Lx < -deadZone || g1Ly < -deadZone && g1Lx > deadZone)
-            {
-                leftBack.setPower(((g1Ly - g1Lx) / 2) * 1.4);
-                rightFront.setPower(((g1Ly - g1Lx) / 2) * 1.4);
-                leftFront.setPower(0);
-                rightBack.setPower(0);
-            }
-
-            //for top right and bottem left
-            else if (g1Ly > deadZone && g1Lx > deadZone || g1Ly < -deadZone && g1Lx < -deadZone)
-            {
-                leftBack.setPower(0);
-                rightFront.setPower(0);
-                leftFront.setPower(((g1Ly + g1Lx) / 2) * 1.5);
-                rightBack.setPower(((g1Ly + g1Lx) / 2) * 1.5);
-            }
-
-            //to stop
-            else
-            {
-                leftBack.setPower(0);
-                rightFront.setPower(0);
-                leftFront.setPower(0);
-                rightBack.setPower(0);
-            }
-
-            if(gamepad1.a)
-            {
-                claw.setPosition(0);
-            }
-            else
-            {
-                claw.setPosition(0.3);
-            }
-
-            if(gamepad1.dpad_up)
-            {
-                verticalLift.setPower(verticalLiftSpeed);
-            }
-            else if(gamepad1.dpad_down)
-            {
-                verticalLift.setPower(-verticalLiftSpeed);
-            }
-            else
-            {
-                verticalLift.setPower(0);
-            }
 
             //VUFORIA
 
@@ -240,35 +152,54 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
              * UNKNOWN will be returned by {@link RelicRecoveryVuMark#from(VuforiaTrackable)}.
              */
             RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
-            if (!center && !left && !right)
-            {
+            if (!center && !left && !right) {
                 if (vuMark == RelicRecoveryVuMark.LEFT) {
-                    telemetry.addData("VuMark", "left", vuMark);
+
                     left = true;
                 } else if (vuMark == RelicRecoveryVuMark.CENTER) {
-                    telemetry.addData("VuMark", "center", vuMark);
+
                     center = true;
                 } else if (vuMark == RelicRecoveryVuMark.RIGHT) {
-                    telemetry.addData("VuMark", "right", vuMark);
-                    right = true;
-                }
-            }
 
-            else if(right)
-            {
+                    right = true;
+                } else {
+                    telemetry.addData("VuMark", "not visible", vuMark);
+                }
+            } else if (right) {
                 telemetry.addData("VuMark", "right", vuMark);
-            }
-            else if(left)
-            {
+            } else if (left) {
                 telemetry.addData("VuMark", "left", vuMark);
-            }
-            else if(right)
-            {
+            } else if (center) {
                 telemetry.addData("VuMark", "center", vuMark);
             }
 
+            if (stage1) {
+                leftBack.setPower(1);
+                rightFront.setPower(1);
+                leftFront.setPower(-1);
+                rightBack.setPower(-1);
+                if (red) {
+                    if (lineSensor.red() <= 20) {
+                        offPlatform = true;
+                    }
+                    if (lineSensor.red() > 20 && offPlatform) {
+
+                    }
+
+                } else {
+
+                    if (!red) {
+                        if (lineSensor.red() <= 20) {
+                            offPlatform = true;
+                        }
+                        if (lineSensor.red() > 20 && offPlatform) {
+
+                        }
+                    }
+                }
 
 
+            }
         }
     }
 }
