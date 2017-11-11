@@ -25,7 +25,7 @@
  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ *//*
 
 package org.firstinspires.ftc.teamcode;
 
@@ -54,13 +54,13 @@ import org.firstinspires.ftc.robotcontroller.external.samples.HardwareK9bot;
  *
  * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
- */
+ *//*
 
 @TeleOp(name="nathans_version_thingie", group="K9bot")
 @Disabled
 public class nathans_version_thingie extends LinearOpMode {
 
-    /* Declare OpMode members. */
+    /* Declare OpMode members. *//*
     HardwareK9bot   robot           = new HardwareK9bot();              // Use a K9'shardware
     DcMotor frontleft;
     DcMotor frontright;
@@ -79,7 +79,7 @@ public class nathans_version_thingie extends LinearOpMode {
         frontright = hardwareMap.dcMotor.get("rightFront");
         backleft = hardwareMap.dcMotor.get("leftBack");
         backright = hardwareMap.dcMotor.get("rightBack");
-        liftarm = hardwareMap.dcMotor.get("armlift")
+        liftarm = hardwareMap.dcMotor.get("armlift");
         claw = hardwareMap.servo.get("claw");
 
         frontleft.setDirection(DcMotor.Direction.FORWARD);
@@ -96,7 +96,7 @@ public class nathans_version_thingie extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             y = -gamepad1.right_stick_y;
-            x = gamepad1.right_stick_x
+            x = gamepad1.right_stick_x;
 
 
             if (y > 0.1 && x > 0.1) {
@@ -135,3 +135,4 @@ public class nathans_version_thingie extends LinearOpMode {
         }
     }
 }
+*/

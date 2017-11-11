@@ -75,6 +75,8 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
     boolean left = false;
     boolean right = false;
     boolean center = false;
+    boolean toggleA = false;
+    boolean flag = true;
 
 
     public static final String TAG = "Vuforia VuMark Sample";
@@ -110,7 +112,6 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
         rightBack.setDirection(DcMotor.Direction.REVERSE);
         verticalLift.setDirection(DcMotor.Direction.FORWARD);
 
-        claw.setPosition(1);
 
         //VUFORIA
 
@@ -142,8 +143,7 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
         runtime.reset();
 
         // run until the end of the match (driver presses STOP)
-        while (opModeIsActive())
-        {
+        while (opModeIsActive()) {
             g1Ly = -gamepad1.left_stick_y;
             g1Lx = gamepad1.left_stick_x;
             g1Rx = gamepad1.right_stick_x;
@@ -152,12 +152,12 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
             telemetry.addData("X:", " " + g1Lx);
             telemetry.addData("Y:", " " + g1Ly);
             telemetry.addData("RX:", " " + g1Rx);
+            telemetry.addData("encoder position" + " ", leftFront.getCurrentPosition());
             //telemetry.addData("Color: ", color.red() + " " + color.green() + " " + color.blue());
             telemetry.update();
 
             //for rotation
-            if (g1Rx > deadZone || g1Rx < -deadZone)
-            {
+            if (g1Rx > deadZone || g1Rx < -deadZone) {
                 leftBack.setPower(g1Rx);
                 rightFront.setPower(-g1Rx);
                 leftFront.setPower(g1Rx);
@@ -165,8 +165,7 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
             }
 
             //for left and right
-            else if (Math.abs(g1Lx) > deadZone && Math.abs(g1Ly) < deadZone)
-            {
+            else if (Math.abs(g1Lx) > deadZone && Math.abs(g1Ly) < deadZone) {
                 leftBack.setPower(-g1Lx);
                 rightFront.setPower(-g1Lx);
                 leftFront.setPower(g1Lx);
@@ -174,8 +173,7 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
             }
 
             //for up and down
-            else if (Math.abs(g1Ly) > deadZone && Math.abs(g1Lx) < deadZone)
-            {
+            else if (Math.abs(g1Ly) > deadZone && Math.abs(g1Lx) < deadZone) {
                 leftBack.setPower(g1Ly);
                 rightFront.setPower(g1Ly);
                 leftFront.setPower(g1Ly);
@@ -183,8 +181,7 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
             }
 
             //for top left and bottem right
-            else if (g1Ly > deadZone && g1Lx < -deadZone || g1Ly < -deadZone && g1Lx > deadZone)
-            {
+            else if (g1Ly > deadZone && g1Lx < -deadZone || g1Ly < -deadZone && g1Lx > deadZone) {
                 leftBack.setPower(((g1Ly - g1Lx) / 2) * 1.4);
                 rightFront.setPower(((g1Ly - g1Lx) / 2) * 1.4);
                 leftFront.setPower(0);
@@ -192,8 +189,7 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
             }
 
             //for top right and bottem left
-            else if (g1Ly > deadZone && g1Lx > deadZone || g1Ly < -deadZone && g1Lx < -deadZone)
-            {
+            else if (g1Ly > deadZone && g1Lx > deadZone || g1Ly < -deadZone && g1Lx < -deadZone) {
                 leftBack.setPower(0);
                 rightFront.setPower(0);
                 leftFront.setPower(((g1Ly + g1Lx) / 2) * 1.5);
@@ -201,23 +197,29 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
             }
 
             //to stop
-            else
-            {
+            else {
                 leftBack.setPower(0);
                 rightFront.setPower(0);
                 leftFront.setPower(0);
                 rightBack.setPower(0);
             }
 
-            if(gamepad1.a)
-            {
-                claw.setPosition(0);
+            //for claw movement
+            if (gamepad1.a && flag){
+                toggleA = !toggleA;
+                flag = false;
             }
-            else
-            {
-                claw.setPosition(0.3);
+            else if(!gamepad1.a) {
+                flag = true;
+            }
+            if(!toggleA) {
+                claw.setPosition(0.4);
+            }
+            else{
+                claw.setPosition(0.6);
             }
 
+            //for lift movement
             if(gamepad1.dpad_up)
             {
                 verticalLift.setPower(verticalLiftSpeed);
@@ -233,12 +235,7 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
 
             //VUFORIA
 
-            /**
-             * See if any of the instances of {@link relicTemplate} are currently visible.
-             * {@link RelicRecoveryVuMark} is an enum which can have the following values:
-             * UNKNOWN, LEFT, CENTER, and RIGHT. When a VuMark is visible, something other than
-             * UNKNOWN will be returned by {@link RelicRecoveryVuMark#from(VuforiaTrackable)}.
-             */
+
             RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
             if (!center && !left && !right)
             {
@@ -267,7 +264,15 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
                 telemetry.addData("VuMark", "center", vuMark);
             }
 
-
+            /*if(gamepad1.a && flag)
+            {
+                toggleA = !toggleA;
+                flag = false;
+            }
+            else if (!gamepad1.a)
+            {
+                flag = tue;
+            }*/
 
         }
     }
