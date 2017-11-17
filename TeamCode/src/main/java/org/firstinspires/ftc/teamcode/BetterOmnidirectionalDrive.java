@@ -72,11 +72,14 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
     double g1Ly;
     double g1Lx;
     double g1Rx;
+    int FL_motor_position;
+    int FR_motor_position;
     boolean left = false;
     boolean right = false;
     boolean center = false;
     boolean toggleA = false;
     boolean flag = true;
+
 
 
     public static final String TAG = "Vuforia VuMark Sample";
@@ -112,6 +115,16 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
         rightBack.setDirection(DcMotor.Direction.REVERSE);
         verticalLift.setDirection(DcMotor.Direction.FORWARD);
 
+        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
 
         //VUFORIA
 
@@ -144,6 +157,8 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
+            FL_motor_position = leftFront.getCurrentPosition();
+            FR_motor_position = rightFront.getCurrentPosition();
             g1Ly = -gamepad1.left_stick_y;
             g1Lx = gamepad1.left_stick_x;
             g1Rx = gamepad1.right_stick_x;
@@ -152,7 +167,7 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
             telemetry.addData("X:", " " + g1Lx);
             telemetry.addData("Y:", " " + g1Ly);
             telemetry.addData("RX:", " " + g1Rx);
-            telemetry.addData("encoder position" + " ", leftFront.getCurrentPosition());
+
             //telemetry.addData("Color: ", color.red() + " " + color.green() + " " + color.blue());
             telemetry.update();
 
@@ -263,7 +278,8 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
             {
                 telemetry.addData("VuMark", "center", vuMark);
             }
-
+            telemetry.addData("encoder position LF" + " ", FL_motor_position);
+            telemetry.addData("encoder position RF" + " ", FR_motor_position);
             /*if(gamepad1.a && flag)
             {
                 toggleA = !toggleA;

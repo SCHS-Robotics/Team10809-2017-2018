@@ -58,7 +58,7 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
     DcMotor rightFront = null;
     DcMotor leftBack = null;
     DcMotor rightBack = null;
-    ColorSensor lineSensor = null;
+    //ColorSensor lineSensor = null;
 
 
     //driving variables
@@ -94,7 +94,7 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
         rightFront = hardwareMap.dcMotor.get("rightFront");
         leftBack = hardwareMap.dcMotor.get("leftBack");
         rightBack = hardwareMap.dcMotor.get("rightBack");
-        lineSensor = (ColorSensor) hardwareMap.dcMotor.get("lineSensor");
+        //lineSensor = (ColorSensor) hardwareMap.dcMotor.get("lineSensor");
         //color = hardwareMap.colorSensor.get("color");
         //color.setI2cAddress(I2cAddr.create8bit(0x4c));
 
@@ -133,7 +133,7 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
-        lineSensor.enableLed(true);
+        //lineSensor.enableLed(true);
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive())
@@ -182,7 +182,7 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
             {
                 telemetry.addData("VuMark", "center", vuMark);
             }
-
+/**
             if(stage1)
             {
 
@@ -217,9 +217,10 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
                         if (lineSensor.red() > 20 && offPlatform) {
 
                         }
+
                 }
             }
-
+*/
 
 
         }
