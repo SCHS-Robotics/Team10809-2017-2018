@@ -51,10 +51,11 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Template: Linear OpMode", group="Linear Opmode")  // @Autonomous(...) is the other common choice
-@Disabled
+@TeleOp(name="stopAtLine", group="Linear Opmode")  // @Autonomous(...) is the other common choice
+//@Disabled
 public class stopAtLine extends LinearOpMode {
-
+    double speed = 0.75;
+    double deadzone = 0.1;
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
     DcMotor leftBackMotor = null;
@@ -71,9 +72,9 @@ public class stopAtLine extends LinearOpMode {
          * to 'get' must correspond to the names assigned during the robot configuration
          * step (using the FTC Robot Controller app on the phone).
          */
-        leftFrontMotor  = hardwareMap.dcMotor.get("left_front_drive");
+        leftFrontMotor = hardwareMap.dcMotor.get("left_front_drive");
         rightFrontMotor = hardwareMap.dcMotor.get("right_front_drive");
-        leftBackMotor  = hardwareMap.dcMotor.get("left_back_drive");
+        leftBackMotor = hardwareMap.dcMotor.get("left_back_drive");
         rightBackMotor = hardwareMap.dcMotor.get("right_back_drive");
 
 
@@ -94,18 +95,44 @@ public class stopAtLine extends LinearOpMode {
             telemetry.update();
 
 
+            if (gamepad1.left_stick_y < -0.25 && gamepad1.left_stick_x > -0.25 && gamepad1.left_stick_x < 0.25)  {
+                leftFrontMotor.setPower(speed);
+                rightFrontMotor.setPower(speed);
+                leftBackMotor.setPower(speed);
+                rightBackMotor.setPower(speed);
+                telemetry.addData("Direction: ", "Forwards");
+            //
+            }else if(gamepad1.left_stick_y < -0.25 && gamepad1.left_stick_x > -0.25 && gamepad1.left_stick_x < 0.25){
+                leftFrontMotor.setPower(-speed);
+                rightFrontMotor.setPower(-speed);
+                leftBackMotor.setPower(-speed);
+                rightBackMotor.setPower(-speed);
+                telemetry.addData("Direction:", "Backwards");
+            }else if(gamepad1.left_stick_x < -0.25 && gamepad1.left_stick_y > -0.25 && gamepad1.left_stick_y < 0.25) {
+                leftFrontMotor.setPower(speed);
+                rightFrontMotor.setPower(-speed);
+                leftBackMotor.setPower(speed);
+                rightBackMotor.setPower(-speed);
+            }else if(gamepad1.left_stick_x > 0.25 && gamepad1.left_stick_y > -0.25 && gamepad1.left_stick_y < 0.25) {
+                leftFrontMotor.setPower(-speed);
+                rightFrontMotor.setPower(speed);
+                leftBackMotor.setPower(-speed);
+                rightBackMotor.setPower(speed);
+            } else if(gamepad1.left_stick_y > 0.25 && gamepad1.left_stick_x > 0.25 && gamepad1.left_stick_x < -0.25) {
+                leftFrontMotor.setPower(speed);
+                rightBackMotor.setPower(speed);
+            }else if(gamepad1.left_stick_y < -0.25 && gamepad1.left_stick_x < 0.25 && gamepad1.left_stick_x <-0.25){
+                rightFrontMotor.setPower(speed);
+                leftBackMotor.setPower(speed);
 
-            if(gamepad1.left_stick_y > 0.25) {
-                leftFrontMotor.setPower(1);
-                rightFrontMotor.setPower(-1);
-                leftBackMotor.setPower(-1);
-                rightBackMotor.setPower(1);
-            } else {
+            }  else{
                 leftFrontMotor.setPower(0);
                 rightFrontMotor.setPower(0);
                 leftBackMotor.setPower(0);
                 rightBackMotor.setPower(0);
+                telemetry.addData("Direction: ", "stopped");
             }
+
 
 
         }
