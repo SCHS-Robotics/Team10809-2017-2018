@@ -69,6 +69,7 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
     
     double deadZone = 0.15;
     double verticalLiftSpeed = 1;
+    int slowFactor = 3;
     double g1Ly;
     double g1Lx;
     double g1Rx;
@@ -164,19 +165,31 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
             g1Rx = gamepad1.right_stick_x;
 
             telemetry.addData("Status", "Run Time: " + runtime.toString());
-            telemetry.addData("X:", " " + g1Lx);
-            telemetry.addData("Y:", " " + g1Ly);
-            telemetry.addData("RX:", " " + g1Rx);
+            telemetry.addData("left trigger", " " + gamepad1.left_trigger);
+            telemetry.addData("encoder position LF", " " + FL_motor_position);
+            telemetry.addData("encoder position RF", " " + FR_motor_position);
+            telemetry.addData("left bumper:", " " + gamepad1.left_bumper);
+
 
             //telemetry.addData("Color: ", color.red() + " " + color.green() + " " + color.blue());
             telemetry.update();
 
             //for rotation
             if (g1Rx > deadZone || g1Rx < -deadZone) {
-                leftBack.setPower(g1Rx);
-                rightFront.setPower(-g1Rx);
-                leftFront.setPower(g1Rx);
-                rightBack.setPower(-g1Rx);
+                //for precision movement
+                if(gamepad1.left_bumper) {
+                    leftBack.setPower(g1Rx/slowFactor);
+                    rightFront.setPower(-g1Rx/slowFactor);
+                    leftFront.setPower(g1Rx/slowFactor);
+                    rightBack.setPower(-g1Rx/slowFactor);
+                    telemetry.addData("rotation speed", " " + g1Rx / slowFactor);
+                } else {//for fast movement
+                    leftBack.setPower(g1Rx);
+                    rightFront.setPower(-g1Rx);
+                    leftFront.setPower(g1Rx);
+                    rightBack.setPower(-g1Rx);
+                    telemetry.addData("rotation speed", " " + g1Rx);
+                }
             }
 
             //for left and right
@@ -278,17 +291,16 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
             {
                 telemetry.addData("VuMark", "center", vuMark);
             }
-            telemetry.addData("encoder position LF" + " ", FL_motor_position);
-            telemetry.addData("encoder position RF" + " ", FR_motor_position);
-            /*if(gamepad1.a && flag)
+
+            if(gamepad1.a && flag)
             {
                 toggleA = !toggleA;
                 flag = false;
             }
             else if (!gamepad1.a)
             {
-                flag = tue;
-            }*/
+                flag = true;
+            }
 
         }
     }
