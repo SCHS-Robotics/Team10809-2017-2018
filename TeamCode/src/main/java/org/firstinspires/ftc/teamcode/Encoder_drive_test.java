@@ -27,7 +27,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.robotcontroller.external.samples;
+package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -36,10 +36,11 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
 
 
 @Autonomous(name="Encoder test", group="Pushbot")
-@Disabled
+
 public class Encoder_drive_test extends LinearOpMode {
 
     /* Declare OpMode members. */
@@ -80,17 +81,15 @@ public class Encoder_drive_test extends LinearOpMode {
         rightBack.setDirection(DcMotor.Direction.REVERSE);
         verticalLift.setDirection(DcMotor.Direction.FORWARD);
 
-        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        leftFront.setTargetPosition(30);
+        leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        leftFront.setTargetPosition(696969);
+        leftFront.setPower(1);
 
         telemetry.addData("encoder position" + " ", leftFront.getCurrentPosition());
         telemetry.addData("encoder position" + " ", rightFront.getCurrentPosition());
@@ -100,8 +99,9 @@ public class Encoder_drive_test extends LinearOpMode {
         waitForStart();
         telemetry.update();
             while (opModeIsActive()){
-
                 telemetry.update();
+                telemetry.addData("encoder position" + " ", leftFront.getCurrentPosition());
+                telemetry.addData("encoder position" + " ", rightFront.getCurrentPosition());
             }
 
 
