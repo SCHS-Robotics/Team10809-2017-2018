@@ -33,6 +33,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -62,6 +63,8 @@ public class Encoder_drive_test extends LinearOpMode {
     static final double     DRIVE_SPEED             = 0.6;
     static final double     TURN_SPEED              = 0.5;
 
+    boolean liftUp = false;
+
     @Override
     public void runOpMode() {
 
@@ -87,9 +90,9 @@ public class Encoder_drive_test extends LinearOpMode {
         leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        verticalLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        leftFront.setTargetPosition(696969);
-        leftFront.setPower(1);
+        claw.setPosition(0.6);
 
         telemetry.addData("encoder position" + " ", leftFront.getCurrentPosition());
         telemetry.addData("encoder position" + " ", rightFront.getCurrentPosition());
@@ -99,9 +102,33 @@ public class Encoder_drive_test extends LinearOpMode {
         waitForStart();
         telemetry.update();
             while (opModeIsActive()){
-                telemetry.update();
-                telemetry.addData("encoder position" + " ", leftFront.getCurrentPosition());
-                telemetry.addData("encoder position" + " ", rightFront.getCurrentPosition());
+                claw.setPosition(0.4);
+                if (runtime.milliseconds() >= 3000 && !liftUp) {
+
+                    verticalLift.setTargetPosition(700);
+                    verticalLift.setPower(1);
+                }
+
+                if(runtime.milliseconds() >= 6000) {
+
+
+                    leftFront.setTargetPosition(4000);
+                    leftFront.setPower(1);
+                    rightFront.setTargetPosition(4000);
+                    rightFront.setPower(1);
+                    leftBack.setTargetPosition(4000);
+                    leftBack.setPower(1);
+                    rightBack.setTargetPosition(4000);
+                    rightBack.setPower(1);
+                    if (runtime.milliseconds() >= 11000)
+                    {
+                        claw.setPosition(.6);
+                    }
+
+                    telemetry.update();
+                    telemetry.addData("encoder position" + " ", leftFront.getCurrentPosition());
+                    telemetry.addData("encoder position" + " ", rightFront.getCurrentPosition());
+                }
             }
 
 

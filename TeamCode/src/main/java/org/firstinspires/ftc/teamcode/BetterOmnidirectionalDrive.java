@@ -80,6 +80,8 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
     boolean center = false;
     boolean toggleA = false;
     boolean flag = true;
+    boolean flag2 = true;
+    boolean toggleLB = false;
 
 
 
@@ -121,8 +123,9 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
 
         //VUFORIA
 
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+        //int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        //VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
         parameters.vuforiaLicenseKey = "ARRYVKz/////AAAAGZxuAEFNDkCrkYt707UsjihZs15F76lsvH7AU/mlPnRZ3yAdhedSbovCnzPrTc4U6nQU0BbKTmXyYv+6l4YQzmIMIos9kWdCc9mFhExHofogzzGejNg38CogHWqIUFqwvbTFIzTwvsTDFTEJuJAduMh1nl4ui9YHjRWv5I3vrBJ96kzkIO1aC23JBA9w+JsMAXKk0PyBitnXq8hTY2x4SM8IVwmRJontBEvr3BUIHi2P8E1sMznS2bEshTvwmg2nOnD6IA9ChrKIP/YVbsO1HHGm9fmqTfoN/VBOiUskbzNBcmylv0jPZOhq+X2LnMRZinss3ZWn8KQE1VLPeVSIJdEAwx8rqyX+wvkqriFVwae/";
 
@@ -169,11 +172,11 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
             //for rotation
             if (g1Rx > deadZone || g1Rx < -deadZone) {
                 //for precision movement
-                if(gamepad1.left_bumper) {
-                    leftBack.setPower(g1Rx/slowFactor);
-                    rightFront.setPower(-g1Rx/slowFactor);
-                    leftFront.setPower(g1Rx/slowFactor);
-                    rightBack.setPower(-g1Rx/slowFactor);
+                if (toggleLB) {
+                    leftBack.setPower(g1Rx / slowFactor);
+                    rightFront.setPower(-g1Rx / slowFactor);
+                    leftFront.setPower(g1Rx / slowFactor);
+                    rightBack.setPower(-g1Rx / slowFactor);
                     telemetry.addData("rotation speed", " " + g1Rx / slowFactor);
                 } else {//for fast movement
                     leftBack.setPower(g1Rx);
@@ -186,35 +189,64 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
 
             //for left and right
             else if (Math.abs(g1Lx) > deadZone && Math.abs(g1Ly) < deadZone) {
-                leftBack.setPower(-g1Lx);
-                rightFront.setPower(-g1Lx);
-                leftFront.setPower(g1Lx);
-                rightBack.setPower(g1Lx);
+                if (toggleLB) {
+                    leftBack.setPower(-g1Lx / slowFactor);
+                    rightFront.setPower(-g1Lx / slowFactor);
+                    leftFront.setPower(g1Lx / slowFactor);
+                    rightBack.setPower(g1Lx / slowFactor);
+                } else {
+                    leftBack.setPower(-g1Lx);
+                    rightFront.setPower(-g1Lx);
+                    leftFront.setPower(g1Lx);
+                    rightBack.setPower(g1Lx);
+                }
             }
 
             //for up and down
             else if (Math.abs(g1Ly) > deadZone && Math.abs(g1Lx) < deadZone) {
-                leftBack.setPower(g1Ly);
-                rightFront.setPower(g1Ly);
-                leftFront.setPower(g1Ly);
-                rightBack.setPower(g1Ly);
+                if (toggleLB) {
+                    leftBack.setPower(g1Ly / slowFactor);
+                    rightFront.setPower(g1Ly / slowFactor);
+                    leftFront.setPower(g1Ly / slowFactor);
+                    rightBack.setPower(g1Ly / slowFactor);
+                } else {
+                    leftBack.setPower(g1Ly);
+                    rightFront.setPower(g1Ly);
+                    leftFront.setPower(g1Ly);
+                    rightBack.setPower(g1Ly);
+                }
             }
 
             //for top left and bottem right
             else if (g1Ly > deadZone && g1Lx < -deadZone || g1Ly < -deadZone && g1Lx > deadZone) {
-                leftBack.setPower(((g1Ly - g1Lx) / 2) * 1.4);
+                if (toggleLB){
+                leftBack.setPower((((g1Ly - g1Lx) / 2) * 1.4)/slowFactor);
                 rightFront.setPower(((g1Ly - g1Lx) / 2) * 1.4);
                 leftFront.setPower(0);
                 rightBack.setPower(0);
+            }else {
+
+                    leftBack.setPower(((g1Ly - g1Lx) / 2) * 1.4);
+                    rightFront.setPower(((g1Ly - g1Lx) / 2) * 1.4);
+                    leftFront.setPower(0);
+                    rightBack.setPower(0);
+                }
             }
 
             //for top right and bottem left
             else if (g1Ly > deadZone && g1Lx > deadZone || g1Ly < -deadZone && g1Lx < -deadZone) {
-                leftBack.setPower(0);
-                rightFront.setPower(0);
-                leftFront.setPower(((g1Ly + g1Lx) / 2) * 1.5);
-                rightBack.setPower(((g1Ly + g1Lx) / 2) * 1.5);
-            }
+                if(toggleLB){
+                    leftBack.setPower(0);
+                    rightFront.setPower(0);
+                    leftFront.setPower((((g1Ly + g1Lx) / 2) * 1.4)/slowFactor);
+                    rightBack.setPower((((g1Ly + g1Lx) / 2) * 1.4)/slowFactor);
+                }else {
+                    leftBack.setPower(0);
+                    rightFront.setPower(0);
+                    leftFront.setPower(((g1Ly + g1Lx) / 2) * 1.4);
+                    rightBack.setPower(((g1Ly + g1Lx) / 2) * 1.4);
+                }
+                }
 
             //to stop
             else {
@@ -225,26 +257,26 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
             }
 
             //for claw movement
-            if (gamepad1.a && flag){
+            if ((gamepad1.a && flag) || (gamepad2.a && flag)){
                 toggleA = !toggleA;
                 flag = false;
             }
-            else if(!gamepad1.a) {
+            else if(!gamepad1.a && !gamepad2.a) {
                 flag = true;
             }
             if(!toggleA) {
                 claw.setPosition(0.4);
             }
             else{
-                claw.setPosition(0.6);
+                claw.setPosition(0.7);
             }
 
             //for lift movement
-            if(gamepad1.dpad_up)
+            if(gamepad1.dpad_up || gamepad2.dpad_up)
             {
                 verticalLift.setPower(verticalLiftSpeed);
             }
-            else if(gamepad1.dpad_down)
+            else if(gamepad1.dpad_down || gamepad2.dpad_down)
             {
                 verticalLift.setPower(-verticalLiftSpeed);
             }
@@ -284,16 +316,25 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
                 telemetry.addData("VuMark", "center", vuMark);
             }
 
-            if(gamepad1.a && flag)
+            if((gamepad1.a || gamepad2.a) && flag )
             {
                 toggleA = !toggleA;
                 flag = false;
             }
-            else if (!gamepad1.a)
+            else if (!gamepad1.a && !gamepad2.a)
             {
                 flag = true;
             }
 
+            if((gamepad1.left_bumper || gamepad2.left_bumper) && flag2 )
+            {
+                toggleLB = !toggleLB;
+                flag2 = false;
+            }
+            else if (!gamepad1.left_bumper && !gamepad2.left_bumper)
+            {
+                flag2 = true;
+            }
         }
     }
 }
