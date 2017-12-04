@@ -32,6 +32,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -55,9 +57,16 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import static com.sun.tools.javac.util.Constants.format;
 
 
-@TeleOp(name="AngularTrueOmnidirectionalDrive", group="Linear Opmode")  // @Autonomous(...) is the other common choice
-//@Disabled
-public class AngularTrueOmnidirectionalDrive extends LinearOpMode {
+@Autonomous(name="AngularTrueOmnidirectionalDriveBlueCorner", group="Linear Opmode")  // @Autonomous(...) is the other common choice
+@Disabled
+public class AngularTrueOmnidirectionalDriveBlueCorner extends LinearOpMode {
+
+    //Auto init variables
+    String sideColor = "blue";
+    String startPosition = "corner";
+    //=============================================================================================
+    //=============================================================================================
+
 
     //vuforia shenanagins
     VuforiaLocalizer vuforia;
@@ -72,6 +81,7 @@ public class AngularTrueOmnidirectionalDrive extends LinearOpMode {
     DcMotor rightBack = null;
     Servo claw = null;
     DcMotor verticalLift = null;
+    Servo arm = null;
 
 
     //driving variables
@@ -81,9 +91,45 @@ public class AngularTrueOmnidirectionalDrive extends LinearOpMode {
     double speed = 0.5;
     double pi = 3.14159265358979323846264338327950288419716939937510;
 
+    //lift variables
     double clawClose = 0.3;
     double clawOpen = 0.7;
     double liftSpeed = 0.5;
+    boolean clawIsOpen = true;
+
+
+    //color sensing arm
+    double armLowPos = 0;
+    double armRaisePos = 1;
+    String measuredColor = "none";
+
+    //auto angle variables
+    int FORWARDS = 0;
+    int RIGHT_FORWARDS = 45;
+    int RIGHT = 90;
+    int RIGHT_BACKWARDS = 135;
+    int BACKWARDS = 180;
+    int LEFT_BACKWARDS = 225;
+    int LEFT = 270;
+    int LEFT_FORWARDS = 315;
+    int SPIN_LEFT = -1000;
+    int SPIN_RIGHT = 1000;
+    int STOP = 1337;
+
+    //auto constants
+    double timer = 0;
+    int loweringTime = 1000;
+    int jewlKnockDistance = 1000;
+    int vumarkSearchTime = 5000;
+
+    //auto control variables
+    String target = "center";
+    boolean armLowered = false;
+    boolean jewlRecovered = false;
+    boolean lookingForVumark = true;
+    boolean reCentered = false;
+    boolean turned = false;
+
 
     @Override
     public void runOpMode() {
@@ -138,8 +184,8 @@ public class AngularTrueOmnidirectionalDrive extends LinearOpMode {
         rightBack = hardwareMap.dcMotor.get("rightBack");
 
         claw = hardwareMap.servo.get("claw");
-
         verticalLift = hardwareMap.dcMotor.get("verticalLift");
+        arm = hardwareMap.servo.get("arm");
 
         //color = hardwareMap.colorSensor.get("color");
         //color.setI2cAddress(I2cAddr.create8bit(0x4c));
@@ -159,109 +205,139 @@ public class AngularTrueOmnidirectionalDrive extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData("Left Front encoder:", " " + leftFront.getCurrentPosition());
             telemetry.addData("Direction:", " " + driveAngle);
             telemetry.addData("Speed: ", speed);
             telemetry.addData("Raw angle: ", angle);
             //telemetry.addData("Color: ", color.red() + " " + color.green() + " " + color.blue());
             telemetry.update();
 
+            if (!armLowered){
+                arm.setPosition(armLowPos);
+                if (timer == 0){
+                    timer = runtime.milliseconds();
+                } else if (runtime.milliseconds() >= timer + loweringTime){
+                    armLowered = true;
+                    timer = 0;
+                }
+            } else if (!jewlRecovered){
+                if(measuredColor == sideColor){
+                    driveAngle = SPIN_RIGHT;
+                    speed = 0.3;
+                } else {
+                    driveAngle = SPIN_LEFT;
+                    speed = 0.3;
+                }
+                if(Math.abs(leftFront.getCurrentPosition()) > jewlKnockDistance){
+                    jewlRecovered = true;
+                    driveAngle = STOP;
+                    speed = 0;
+                }
+            } else if(lookingForVumark) {
+                driveAngle = SPIN_LEFT;
+                speed = 0.15;
 
-            //vuforia
-            RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
-            if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
-
+                RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
+                if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
+                lookingForVumark = false;
                 /* Found an instance of the template. In the actual game, you will probably
                  * loop until this condition occurs, then move on to act accordingly depending
                  * on which VuMark was visible. */
-                telemetry.addData("VuMark", "%s visible", vuMark);
+                    telemetry.addData("VuMark", "%s visible", vuMark);
 
                 /* For fun, we also exhibit the navigational pose. In the Relic Recovery game,
                  * it is perhaps unlikely that you will actually need to act on this pose information, but
                  * we illustrate it nevertheless, for completeness. */
-                OpenGLMatrix pose = ((VuforiaTrackableDefaultListener)relicTemplate.getListener()).getPose();
-                telemetry.addData("Pose", format(pose));
+                    OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) relicTemplate.getListener()).getPose();
+                    telemetry.addData("Pose", format(pose));
 
                 /* We further illustrate how to decompose the pose into useful rotational and
                  * translational components */
-                if (pose != null) {
-                    VectorF trans = pose.getTranslation();
-                    Orientation rot = Orientation.getOrientation(pose, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
+                    if (pose != null) {
+                        VectorF trans = pose.getTranslation();
+                        Orientation rot = Orientation.getOrientation(pose, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
 
-                    // Extract the X, Y, and Z components of the offset of the target relative to the robot
-                    double tX = trans.get(0);
-                    double tY = trans.get(1);
-                    double tZ = trans.get(2);
+                        // Extract the X, Y, and Z components of the offset of the target relative to the robot
+                        double tX = trans.get(0);
+                        double tY = trans.get(1);
+                        double tZ = trans.get(2);
 
-                    // Extract the rotational components of the target relative to the robot
-                    double rX = rot.firstAngle;
-                    double rY = rot.secondAngle;
-                    double rZ = rot.thirdAngle;
+                        // Extract the rotational components of the target relative to the robot
+                        double rX = rot.firstAngle;
+                        double rY = rot.secondAngle;
+                        double rZ = rot.thirdAngle;
+                    }
+                } else {
+                    telemetry.addData("VuMark", "not visible");
                 }
+                if (vuMark == RelicRecoveryVuMark.LEFT){
+                    target = "left";
+                } else if (vuMark == RelicRecoveryVuMark.RIGHT){
+                    target = "right";
+                } else {
+                    target = "center";
+                }
+                if(timer == 0){
+                    timer = runtime.milliseconds();
+                } else if(runtime.milliseconds() >= timer + vumarkSearchTime){
+                    lookingForVumark = false;
+                    timer = 0;
+                }
+            } else if (!reCentered){
+                if (leftFront.getCurrentPosition() > 100){
+                    driveAngle = SPIN_RIGHT;
+                    speed = 0.15;
+                } else if (leftFront.getCurrentPosition() < -100){
+                    driveAngle = SPIN_LEFT;
+                    speed = 0.15;
+                } else {
+                    driveAngle = STOP;
+                    speed = 0;
+                    reCentered = true;
+                }
+            } else if (!turned){
+                  if(sideColor == "blue"){
+                      if(startPosition == "corner"){
+
+                      } else {
+
+                      }
+                  } else {
+                      if(startPosition == "corner"){
+
+                      } else {
+
+                      }
+                  }
             }
-            else {
-                telemetry.addData("VuMark", "not visible");
-            }
+
+
 
             //claw
-            if(gamepad1.a){
+            if(clawIsOpen){
                 claw.setPosition(clawClose);
             } else{
                 claw.setPosition(clawOpen);
             }
 
-            //vertical lift
-            if(gamepad1.dpad_up){
-                verticalLift.setPower(liftSpeed);
-            } else if(gamepad1.dpad_down){
-                verticalLift.setPower(-liftSpeed);
-            } else {
-                verticalLift.setPower(0);
-            }
 
 
 
-            //angular drive
-            angle = Math.atan2(-gamepad1.left_stick_y, gamepad1.left_stick_x);
 
-            //displayed angle
-            driveAngle = -180*(angle - pi/2)/pi;
-            while (driveAngle > 360){
-                driveAngle -= 360;
-            }
-            while(driveAngle < 0){
-                driveAngle +=360;
-            }
+            measuredColor = "blue";
 
-
-
-            if(Math.abs(gamepad1.right_stick_x) > deadZone) {
-                speed = gamepad1.right_stick_x/2;
-
-                leftFront.setPower(speed);
-                rightFront.setPower(-speed);
-                leftBack.setPower(speed);
-                rightBack.setPower(-speed);
-            } else {
-                if(gamepad1.b){
-                    speed = 0;
+            if (driveAngle != STOP) {
+                if (driveAngle == -SPIN_LEFT || driveAngle == SPIN_RIGHT) {
+                    leftFront.setPower(speed * driveAngle / 1000);
+                    rightFront.setPower(-speed * driveAngle / 1000);
+                    leftBack.setPower(speed * driveAngle / 1000);
+                    rightBack.setPower(-speed * driveAngle / 1000);
                 } else {
-                    if (Math.abs(gamepad1.left_stick_x) > deadZone || Math.abs(gamepad1.left_stick_y) > deadZone) {
-                        speed = Math.min(Math.pow(gamepad1.left_stick_x, 2) + Math.pow(gamepad1.left_stick_y, 2), 1);
-                    } else {
-                        speed = 0;
-                    }
+                    leftFront.setPower(speed * Math.cos(pi * (driveAngle - 45) / 180));
+                    rightFront.setPower(speed * Math.sin(pi * (driveAngle - 45) / 180));
+                    leftBack.setPower(speed * Math.sin(pi * (driveAngle - 45) / 180));
+                    rightBack.setPower(speed * Math.cos(pi * (driveAngle - 45) / 180));
                 }
-
-                leftFront.setPower(speed*Math.sin(pi*(driveAngle+45)/180));
-                rightFront.setPower(speed*Math.cos(pi*(driveAngle+45)/180));
-                leftBack.setPower(speed*Math.cos(pi*(driveAngle+45)/180));
-                rightBack.setPower(speed*Math.sin(pi*(driveAngle+45)/180));
-
-                //leftFront.setPower(speed * Math.cos(angle - pi / 4));
-                //rightFront.setPower(speed * Math.sin(angle - pi / 4));
-                //leftBack.setPower(speed * Math.sin(angle - pi / 4));
-                //rightBack.setPower(speed * Math.cos(angle - pi / 4));
-                
             }
         }
     }
