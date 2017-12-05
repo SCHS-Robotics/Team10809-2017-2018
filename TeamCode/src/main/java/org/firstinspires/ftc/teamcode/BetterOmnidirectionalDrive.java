@@ -75,9 +75,6 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
     double g1Rx;
     int FL_motor_position;
     int FR_motor_position;
-    boolean left = false;
-    boolean right = false;
-    boolean center = false;
     boolean toggleA = false;
     boolean flag = true;
     boolean flag2 = true;
@@ -85,9 +82,9 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
 
 
 
-    public static final String TAG = "Vuforia VuMark Sample";
 
-    OpenGLMatrix lastLocation = null;
+
+
 
     /**
      * {@link #vuforia} is the variable we will use to store our instance of the Vuforia
@@ -121,16 +118,6 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
 
 
 
-        //VUFORIA
-
-        //int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        //VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
-
-        parameters.vuforiaLicenseKey = "ARRYVKz/////AAAAGZxuAEFNDkCrkYt707UsjihZs15F76lsvH7AU/mlPnRZ3yAdhedSbovCnzPrTc4U6nQU0BbKTmXyYv+6l4YQzmIMIos9kWdCc9mFhExHofogzzGejNg38CogHWqIUFqwvbTFIzTwvsTDFTEJuJAduMh1nl4ui9YHjRWv5I3vrBJ96kzkIO1aC23JBA9w+JsMAXKk0PyBitnXq8hTY2x4SM8IVwmRJontBEvr3BUIHi2P8E1sMznS2bEshTvwmg2nOnD6IA9ChrKIP/YVbsO1HHGm9fmqTfoN/VBOiUskbzNBcmylv0jPZOhq+X2LnMRZinss3ZWn8KQE1VLPeVSIJdEAwx8rqyX+wvkqriFVwae/";
-
-        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.FRONT;
-        this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
 
         /**
          * Load the data set containing the VuMarks for Relic Recovery. There's only one trackable
@@ -138,11 +125,6 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
          * but differ in their instance id information.
          * @see VuMarkInstanceId
          */
-        VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
-        VuforiaTrackable relicTemplate = relicTrackables.get(0);
-        relicTemplate.setName("relicVuMarkTemplate"); // can help in debugging; otherwise not necessary
-
-        relicTrackables.activate();
 
 
         telemetry.addData("Status", "Ready to begin");
@@ -288,33 +270,7 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
             //VUFORIA
 
 
-            RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
-            if (!center && !left && !right)
-            {
-                if (vuMark == RelicRecoveryVuMark.LEFT) {
-                    telemetry.addData("VuMark", "left", vuMark);
-                    left = true;
-                } else if (vuMark == RelicRecoveryVuMark.CENTER) {
-                    telemetry.addData("VuMark", "center", vuMark);
-                    center = true;
-                } else if (vuMark == RelicRecoveryVuMark.RIGHT) {
-                    telemetry.addData("VuMark", "right", vuMark);
-                    right = true;
-                }
-            }
 
-            else if(right)
-            {
-                telemetry.addData("VuMark", "right", vuMark);
-            }
-            else if(left)
-            {
-                telemetry.addData("VuMark", "left", vuMark);
-            }
-            else if(right)
-            {
-                telemetry.addData("VuMark", "center", vuMark);
-            }
 
             if((gamepad1.a || gamepad2.a) && flag )
             {

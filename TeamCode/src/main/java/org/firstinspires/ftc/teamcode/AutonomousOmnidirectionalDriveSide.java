@@ -58,18 +58,19 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
     DcMotor rightFront = null;
     DcMotor leftBack = null;
     DcMotor rightBack = null;
-    //ColorSensor lineSensor = null;
+    DcMotor verticalLift = null;
+    ColorSensor color = null;
 
 
     //driving variables
 
-    boolean stage1 = false;
+    boolean stage1 = true;
     boolean left = false;
     boolean right = false;
     boolean center = false;
     boolean red = true;
-    boolean offPlatform = false;
-    double setTime;
+    boolean stage2 = false;
+
 
 
 
@@ -94,20 +95,29 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
         rightFront = hardwareMap.dcMotor.get("rightFront");
         leftBack = hardwareMap.dcMotor.get("leftBack");
         rightBack = hardwareMap.dcMotor.get("rightBack");
-        //lineSensor = (ColorSensor) hardwareMap.dcMotor.get("lineSensor");
-        //color = hardwareMap.colorSensor.get("color");
-        //color.setI2cAddress(I2cAddr.create8bit(0x4c));
+        color = hardwareMap.colorSensor.get("color");
+        verticalLift = hardwareMap.dcMotor.get("verticalLift");
+
 
 
         leftFront.setDirection(DcMotor.Direction.FORWARD);
         rightFront.setDirection(DcMotor.Direction.REVERSE);
         leftBack.setDirection(DcMotor.Direction.FORWARD);
         rightBack.setDirection(DcMotor.Direction.REVERSE);
+        verticalLift.setDirection(DcMotor.Direction.FORWARD);
+
+
+
+        leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rightFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        verticalLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         //VUFORIA
 
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
         parameters.vuforiaLicenseKey = "ARRYVKz/////AAAAGZxuAEFNDkCrkYt707UsjihZs15F76lsvH7AU/mlPnRZ3yAdhedSbovCnzPrTc4U6nQU0BbKTmXyYv+6l4YQzmIMIos9kWdCc9mFhExHofogzzGejNg38CogHWqIUFqwvbTFIzTwvsTDFTEJuJAduMh1nl4ui9YHjRWv5I3vrBJ96kzkIO1aC23JBA9w+JsMAXKk0PyBitnXq8hTY2x4SM8IVwmRJontBEvr3BUIHi2P8E1sMznS2bEshTvwmg2nOnD6IA9ChrKIP/YVbsO1HHGm9fmqTfoN/VBOiUskbzNBcmylv0jPZOhq+X2LnMRZinss3ZWn8KQE1VLPeVSIJdEAwx8rqyX+wvkqriFVwae/";
 
@@ -132,7 +142,7 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
 
         waitForStart();
         runtime.reset();
-
+        color.enableLed(true);
         //lineSensor.enableLed(true);
 
         // run until the end of the match (driver presses STOP)
@@ -182,47 +192,96 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
             {
                 telemetry.addData("VuMark", "center", vuMark);
             }
-/**
+
             if(stage1)
             {
 
-                if(red) {
-                    leftBack.setPower(1);
-                    rightFront.setPower(1);
-                    leftFront.setPower(-1);
-                    rightBack.setPower(-1);
 
-                    if (lineSensor.red() <= 20) {
-                        offPlatform = true;
-                    }
-                    if (lineSensor.red() > 20 && offPlatform) {
+                 if(color.red() > 1 || color.blue() > 1){
+                     if(color.red() > color.blue()){
+                         if (red) {
+                             leftFront.setTargetPosition(-300);
+                             leftFront.setPower(.4);
+                             rightFront.setTargetPosition(-300);
+                             rightFront.setPower(.4);
+                             leftBack.setTargetPosition(-300);
+                             leftBack.setPower(.4);
+                             rightBack.setTargetPosition(-300);
+                             rightBack.setPower(.4);
+                             stage1 = false;
+                             stage2 = true;
+                         }
+                         else {
+                             leftFront.setTargetPosition(300);
+                             leftFront.setPower(.4);
+                             rightFront.setTargetPosition(300);
+                             rightFront.setPower(.4);
+                             leftBack.setTargetPosition(300);
+                             leftBack.setPower(.4);
+                             rightBack.setTargetPosition(300);
+                             rightBack.setPower(.4);
+                             stage1 = false;
+                             stage2 = true;
+                         }
+                     }
 
-                    }
+
+                     else{
+                         if (red) {
+                             leftFront.setTargetPosition(-300);
+                             leftFront.setPower(.4);
+                             rightFront.setTargetPosition(-300);
+                             rightFront.setPower(.4);
+                             leftBack.setTargetPosition(-300);
+                             leftBack.setPower(.4);
+                             rightBack.setTargetPosition(-300);
+                             rightBack.setPower(.4);
+                             stage1 = false;
+                             stage2 = true;
+                         }
+                         else{
+                             leftFront.setTargetPosition(300);
+                             leftFront.setPower(.4);
+                             rightFront.setTargetPosition(300);
+                             rightFront.setPower(.4);
+                             leftBack.setTargetPosition(300);
+                             leftBack.setPower(.4);
+                             rightBack.setTargetPosition(300);
+                             rightBack.setPower(.4);
+                             stage1 = false;
+                             stage2 = true;
+                         }
+
+                     }
+                 }
+
+
+
+            }
+            if (stage2)
+            {
+                if(red){
+                    leftFront.setTargetPosition(2000);
+                    leftFront.setPower(.4);
+                    rightFront.setTargetPosition(2000);
+                    rightFront.setPower(.4);
+                    leftBack.setTargetPosition(2000);
+                    leftBack.setPower(.4);
+                    rightBack.setTargetPosition(2000);
+                    rightBack.setPower(.4);
                 }
-                }
-
-                else
-                {
-
-                    if(!red)
-                    {
-                        leftBack.setPower(-1);
-                        rightFront.setPower(-1);
-                        leftFront.setPower(1);
-                        rightBack.setPower(1);
-                        if (lineSensor.red() <= 20)
-                        {
-                            offPlatform = true;
-                        }
-                        if (lineSensor.red() > 20 && offPlatform) {
-
-                        }
-
+                else{
+                    leftBack.setPower(g1Rx);
+                    rightFront.setPower(-g1Rx);
+                    leftFront.setPower(g1Rx);
+                    rightBack.setPower(-g1Rx);
+                    //use 5squared pluse 6.5squared = xsquared
                 }
             }
-*/
-
 
         }
-    }
+
+
+     }
 }
+
