@@ -37,6 +37,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.I2cAddr;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -59,6 +61,8 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
     DcMotor leftBack = null;
     DcMotor rightBack = null;
     DcMotor verticalLift = null;
+    Servo claw = null;
+    Servo arm = null;
     ColorSensor color = null;
 
 
@@ -69,7 +73,7 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
     boolean right = false;
     boolean center = false;
     boolean red = true;
-    boolean stage2 = false;
+    boolean stage2 = true;
 
 
 
@@ -95,16 +99,20 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
         rightFront = hardwareMap.dcMotor.get("rightFront");
         leftBack = hardwareMap.dcMotor.get("leftBack");
         rightBack = hardwareMap.dcMotor.get("rightBack");
+        claw = hardwareMap.servo.get("claw");
+        arm = hardwareMap.servo.get("arm");
         color = hardwareMap.colorSensor.get("color");
         verticalLift = hardwareMap.dcMotor.get("verticalLift");
 
-
+        color.setI2cAddress(new I2cAddr(0x39));
 
         leftFront.setDirection(DcMotor.Direction.FORWARD);
         rightFront.setDirection(DcMotor.Direction.REVERSE);
         leftBack.setDirection(DcMotor.Direction.FORWARD);
         rightBack.setDirection(DcMotor.Direction.REVERSE);
         verticalLift.setDirection(DcMotor.Direction.FORWARD);
+        claw.setDirection(Servo.Direction.FORWARD);
+        arm.setDirection(Servo.Direction.FORWARD);
 
 
 
@@ -193,10 +201,11 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
                 telemetry.addData("VuMark", "center", vuMark);
             }
 
-            if(stage1)
+            /**if(stage1)
             {
-
-
+                telemetry.addData("Red:", " ", color.red());
+                telemetry.addData("Blue:", " ", color.blue());
+                arm.setPosition(0);
                  if(color.red() > 1 || color.blue() > 1){
                      if(color.red() > color.blue()){
                          if (red) {
@@ -258,8 +267,10 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
 
 
             }
+             */
             if (stage2)
             {
+                arm.setPosition(.5);
                 if(red){
                     leftFront.setTargetPosition(2000);
                     leftFront.setPower(.4);
@@ -271,10 +282,24 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
                     rightBack.setPower(.4);
                 }
                 else{
-                    leftBack.setPower(g1Rx);
-                    rightFront.setPower(-g1Rx);
-                    leftFront.setPower(g1Rx);
-                    rightBack.setPower(-g1Rx);
+                    leftFront.setTargetPosition(leftFront.getCurrentPosition() + 5976);
+                    leftFront.setPower(.4);
+                    rightFront.setTargetPosition(leftFront.getCurrentPosition() - 5976);
+                    rightFront.setPower(.4);
+                    leftBack.setTargetPosition(leftFront.getCurrentPosition() + 5976);
+                    leftBack.setPower(.4);
+                    rightBack.setTargetPosition(leftFront.getCurrentPosition() - 5976);
+                    rightBack.setPower(.4);
+
+                    if(leftFront.getCurrentPosition() > 1980)
+                    leftFront.setTargetPosition(leftFront.getCurrentPosition() + 2000);
+                    leftFront.setPower(.4);
+                    rightFront.setTargetPosition(rightFront.getCurrentPosition() + 2000);
+                    rightFront.setPower(.4);
+                    leftBack.setTargetPosition(leftBack.getCurrentPosition() + 2000);
+                    leftBack.setPower(.4);
+                    rightBack.setTargetPosition(rightBack.getCurrentPosition() + 2000);
+                    rightBack.setPower(.4);
                     //use 5squared pluse 6.5squared = xsquared
                 }
             }
