@@ -63,6 +63,7 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
     DcMotor rightBack = null;
     DcMotor verticalLift = null;
     Servo claw = null;
+    Servo arm = null;
 
 
     //driving variables
@@ -105,6 +106,7 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
         rightBack = hardwareMap.dcMotor.get("rightBack");
         verticalLift = hardwareMap.dcMotor.get("verticalLift");
         claw = hardwareMap.servo.get("claw");
+        arm = hardwareMap.servo.get("arm");
         //color = hardwareMap.colorSensor.get("color");
         //color.setI2cAddress(I2cAddr.create8bit(0x4c));
 
@@ -113,7 +115,7 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
         rightFront.setDirection(DcMotor.Direction.REVERSE);
         leftBack.setDirection(DcMotor.Direction.FORWARD);
         rightBack.setDirection(DcMotor.Direction.REVERSE);
-        verticalLift.setDirection(DcMotor.Direction.FORWARD);
+        verticalLift.setDirection(DcMotor.Direction.REVERSE);
 
 
 
@@ -125,7 +127,7 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
          * but differ in their instance id information.
          * @see VuMarkInstanceId
          */
-
+        arm.setPosition(.6);
 
         telemetry.addData("Status", "Ready to begin");
         telemetry.update();

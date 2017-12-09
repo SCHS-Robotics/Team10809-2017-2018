@@ -72,8 +72,12 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
     boolean left = false;
     boolean right = false;
     boolean center = false;
-    boolean red = true;
-    boolean stage2 = true;
+    boolean red = false;
+    boolean stage2 = false;
+    boolean stage3 = false;
+    boolean flag = true;
+    double leftFrontPos = 0;
+    boolean flag2 = true;
 
 
 
@@ -129,7 +133,7 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
 
         parameters.vuforiaLicenseKey = "ARRYVKz/////AAAAGZxuAEFNDkCrkYt707UsjihZs15F76lsvH7AU/mlPnRZ3yAdhedSbovCnzPrTc4U6nQU0BbKTmXyYv+6l4YQzmIMIos9kWdCc9mFhExHofogzzGejNg38CogHWqIUFqwvbTFIzTwvsTDFTEJuJAduMh1nl4ui9YHjRWv5I3vrBJ96kzkIO1aC23JBA9w+JsMAXKk0PyBitnXq8hTY2x4SM8IVwmRJontBEvr3BUIHi2P8E1sMznS2bEshTvwmg2nOnD6IA9ChrKIP/YVbsO1HHGm9fmqTfoN/VBOiUskbzNBcmylv0jPZOhq+X2LnMRZinss3ZWn8KQE1VLPeVSIJdEAwx8rqyX+wvkqriFVwae/";
 
-        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.FRONT;
+        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.BACK;
         this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
 
         /**
@@ -157,6 +161,9 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
         while (opModeIsActive())
         {
 
+            telemetry.addData("Red:", " " + color.red());
+            telemetry.addData("Blue:", " " + color.blue());
+            telemetry.addData("Greem:", " " + color.green());
             telemetry.addData("Status", "Run Time: " + runtime.toString());
 
             //telemetry.addData("Color: ", color.red() + " " + color.green() + " " + color.blue());
@@ -168,7 +175,7 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
 
             /**
              * See if any of the instances of {@link relicTemplate} are currently visible.
-             * {@link RelicRecoveryVuMark} is an enum which can have the following values:
+             * {@link RelicRecoveryVuMark} i0s an enum which can have the following values:
              * UNKNOWN, LEFT, CENTER, and RIGHT. When a VuMark is visible, something other than
              * UNKNOWN will be returned by {@link RelicRecoveryVuMark#from(VuforiaTrackable)}.
              */
@@ -201,11 +208,10 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
                 telemetry.addData("VuMark", "center", vuMark);
             }
 
-            /**if(stage1)
+            if(stage1)
             {
-                telemetry.addData("Red:", " ", color.red());
-                telemetry.addData("Blue:", " ", color.blue());
-                arm.setPosition(0);
+
+                arm.setPosition(.05);
                  if(color.red() > 1 || color.blue() > 1){
                      if(color.red() > color.blue()){
                          if (red) {
@@ -267,11 +273,10 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
 
 
             }
-             */
-            if (stage2)
-            {
+
+            if (stage2) {
                 arm.setPosition(.5);
-                if(red){
+                if (red && Math.abs(leftFront.getCurrentPosition()) > 280) {
                     leftFront.setTargetPosition(2000);
                     leftFront.setPower(.4);
                     rightFront.setTargetPosition(2000);
@@ -280,8 +285,13 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
                     leftBack.setPower(.4);
                     rightBack.setTargetPosition(2000);
                     rightBack.setPower(.4);
-                }
-                else{
+                    stage3 = true;
+                    stage2 = false;
+                } else if (Math.abs(leftFront.getCurrentPosition()) > 280) {
+                    if (flag) {
+                        leftFrontPos = leftFront.getCurrentPosition();
+                        flag = false;
+                    }
                     leftFront.setTargetPosition(leftFront.getCurrentPosition() + 5976);
                     leftFront.setPower(.4);
                     rightFront.setTargetPosition(leftFront.getCurrentPosition() - 5976);
@@ -291,16 +301,58 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
                     rightBack.setTargetPosition(leftFront.getCurrentPosition() - 5976);
                     rightBack.setPower(.4);
 
-                    if(leftFront.getCurrentPosition() > 1980)
-                    leftFront.setTargetPosition(leftFront.getCurrentPosition() + 2000);
+                    if (leftFront.getCurrentPosition() - leftFrontPos > 5920) {
+                        if (flag2) {
+                            leftFrontPos = leftFront.getCurrentPosition();
+                            flag2 = false;
+                        }
+                        leftFront.setTargetPosition(leftFront.getCurrentPosition() + 2000);
+                        leftFront.setPower(.4);
+                        rightFront.setTargetPosition(rightFront.getCurrentPosition() + 2000);
+                        rightFront.setPower(.4);
+                        leftBack.setTargetPosition(leftBack.getCurrentPosition() + 2000);
+                        leftBack.setPower(.4);
+                        rightBack.setTargetPosition(rightBack.getCurrentPosition() + 2000);
+                        rightBack.setPower(.4);
+                        //use 5squared pluse 6.5squared = xsquared
+                        if (leftFront.getCurrentPosition() - leftFrontPos > 1980) {
+                            stage3 = true;
+                            stage2 = false;
+                        }
+                    }
+
+                }
+            }
+            if (stage3){
+                if(right){
+                    leftFront.setTargetPosition(leftFront.getCurrentPosition() + 1000);
                     leftFront.setPower(.4);
-                    rightFront.setTargetPosition(rightFront.getCurrentPosition() + 2000);
+                    rightFront.setTargetPosition(rightFront.getCurrentPosition() + 1000);
                     rightFront.setPower(.4);
-                    leftBack.setTargetPosition(leftBack.getCurrentPosition() + 2000);
+                    leftBack.setTargetPosition(leftBack.getCurrentPosition() + 1000);
                     leftBack.setPower(.4);
-                    rightBack.setTargetPosition(rightBack.getCurrentPosition() + 2000);
+                    rightBack.setTargetPosition(rightBack.getCurrentPosition() + 1000);
                     rightBack.setPower(.4);
-                    //use 5squared pluse 6.5squared = xsquared
+                }
+                if (center){
+                    leftFront.setTargetPosition(leftFront.getCurrentPosition() + 3000);
+                    leftFront.setPower(.4);
+                    rightFront.setTargetPosition(rightFront.getCurrentPosition() + 3000);
+                    rightFront.setPower(.4);
+                    leftBack.setTargetPosition(leftBack.getCurrentPosition() + 3000);
+                    leftBack.setPower(.4);
+                    rightBack.setTargetPosition(rightBack.getCurrentPosition() + 3000);
+                    rightBack.setPower(.4);
+                }
+                if (left){
+                    leftFront.setTargetPosition(leftFront.getCurrentPosition() + 5000);
+                    leftFront.setPower(.4);
+                    rightFront.setTargetPosition(rightFront.getCurrentPosition() + 5000);
+                    rightFront.setPower(.4);
+                    leftBack.setTargetPosition(leftBack.getCurrentPosition() + 5000);
+                    leftBack.setPower(.4);
+                    rightBack.setTargetPosition(rightBack.getCurrentPosition() + 5000);
+                    rightBack.setPower(.4);
                 }
             }
 
@@ -309,4 +361,5 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
 
      }
 }
+
 
