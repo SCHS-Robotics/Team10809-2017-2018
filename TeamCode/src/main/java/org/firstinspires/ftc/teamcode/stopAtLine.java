@@ -36,6 +36,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
@@ -55,6 +56,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 //@Disabled
 public class stopAtLine extends LinearOpMode {
     double speed = 0.75;
+    double liftSpeed = 0.75;
     double deadzone = 0.1;
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
@@ -62,6 +64,8 @@ public class stopAtLine extends LinearOpMode {
     DcMotor rightBackMotor = null;
     DcMotor rightFrontMotor = null;
     DcMotor leftFrontMotor = null;
+    DcMotor lift = null;
+    Servo theClaw = null;
 
     @Override
     public void runOpMode() {
@@ -72,11 +76,12 @@ public class stopAtLine extends LinearOpMode {
          * to 'get' must correspond to the names assigned during the robot configuration
          * step (using the FTC Robot Controller app on the phone).
          */
-        leftFrontMotor = hardwareMap.dcMotor.get("left_front_drive");
-        rightFrontMotor = hardwareMap.dcMotor.get("right_front_drive");
-        leftBackMotor = hardwareMap.dcMotor.get("left_back_drive");
-        rightBackMotor = hardwareMap.dcMotor.get("right_back_drive");
-
+        leftFrontMotor = hardwareMap.dcMotor.get("leftFront");
+        rightFrontMotor = hardwareMap.dcMotor.get("rightFront");
+        leftBackMotor = hardwareMap.dcMotor.get("leftBack");
+        rightBackMotor = hardwareMap.dcMotor.get("rightBack");
+        theClaw = hardwareMap.servo.get("claw");
+        lift = hardwareMap.dcMotor.get("verticalLift");
 
         // eg: Set the drive motor directions:
         // "Reverse" the motor that runs backwards when connected directly to the battery
@@ -131,10 +136,30 @@ public class stopAtLine extends LinearOpMode {
                 leftBackMotor.setPower(0);
                 rightBackMotor.setPower(0);
                 telemetry.addData("Direction: ", "stopped");
+
+
+
+            }
+            //end of driving stuff
+
+            if(gamepad1.dpad_up){
+                lift.setPower(liftSpeed);
+            } else if(gamepad1.dpad_down){
+                lift.setPower(-liftSpeed);
+            } else{
+                lift.setPower(0);
+            }
+
+            //Claw Code
+            if(gamepad1.a){
+                theClaw.setPosition(0.3);
+            } else{
+                theClaw.setPosition(0.7);
             }
 
 
 
-        }
+        }//end of operating loop
+
     }
 }
