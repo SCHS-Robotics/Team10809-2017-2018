@@ -36,6 +36,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -82,6 +83,7 @@ public class AngularTrueOmnidirectionalDriveBlueCorner extends LinearOpMode {
     Servo claw = null;
     DcMotor verticalLift = null;
     Servo arm = null;
+    ColorSensor color = null;
 
 
     //driving variables
@@ -121,6 +123,7 @@ public class AngularTrueOmnidirectionalDriveBlueCorner extends LinearOpMode {
     int loweringTime = 1000;
     int jewlKnockDistance = 1000;
     int vumarkSearchTime = 5000;
+    int moveForwardDistance = 1000;
 
     //auto control variables
     String target = "center";
@@ -129,6 +132,8 @@ public class AngularTrueOmnidirectionalDriveBlueCorner extends LinearOpMode {
     boolean lookingForVumark = true;
     boolean reCentered = false;
     boolean turned = false;
+    boolean firstMove = false;
+    boolean movedForward = false;
 
 
     @Override
@@ -187,7 +192,7 @@ public class AngularTrueOmnidirectionalDriveBlueCorner extends LinearOpMode {
         verticalLift = hardwareMap.dcMotor.get("verticalLift");
         arm = hardwareMap.servo.get("arm");
 
-        //color = hardwareMap.colorSensor.get("color");
+        color = hardwareMap.colorSensor.get("color");
         //color.setI2cAddress(I2cAddr.create8bit(0x4c));
 
         leftFront.setDirection(DcMotor.Direction.FORWARD);
@@ -207,18 +212,21 @@ public class AngularTrueOmnidirectionalDriveBlueCorner extends LinearOpMode {
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Left Front encoder:", " " + leftFront.getCurrentPosition());
             telemetry.addData("Direction:", " " + driveAngle);
-            telemetry.addData("Speed: ", speed);
-            telemetry.addData("Raw angle: ", angle);
-            //telemetry.addData("Color: ", color.red() + " " + color.green() + " " + color.blue());
+            telemetry.addData("Speed:"," " + speed);
+            telemetry.addData("Raw angle:", " " + angle);
+            telemetry.addData("Color: ", color.red() + " " + color.green() + " " + color.blue());
             telemetry.update();
 
             if (!armLowered){
                 arm.setPosition(armLowPos);
+                clawIsOpen = false;
+                verticalLift.setPower(liftSpeed);
                 if (timer == 0){
                     timer = runtime.milliseconds();
                 } else if (runtime.milliseconds() >= timer + loweringTime){
                     armLowered = true;
                     timer = 0;
+                    verticalLift.setPower(0);
                 }
             } else if (!jewlRecovered){
                 if(measuredColor == sideColor){
@@ -309,22 +317,81 @@ public class AngularTrueOmnidirectionalDriveBlueCorner extends LinearOpMode {
 
                       }
                   }
+            } else if (!firstMove){
+                if (startPosition == "corner") {
+                    if (target == "left") {
+                        if(sideColor == "blue"){
+                            //left corner blue
+                        } else {
+                            //left corner red
+                        }
+                    } else if (target == "right"){
+                        if(sideColor == "blue"){
+                            //right corner blue
+                        } else {
+                            //right corner red
+                        }
+                    } else {
+                        if(sideColor == "blue"){
+                            //center corner blue
+                        } else {
+                            //center corner red
+                        }
+                    }
+                } else {
+                    if (target == "left") {
+                        if(sideColor == "blue"){
+                            //left side blue
+                        } else {
+                            //left side red
+                        }
+                    } else if (target == "right"){
+                        if(sideColor == "blue"){
+                            //right side blue
+                        } else {
+                            //right side red
+                        }
+                    } else {
+                        if(sideColor == "blue"){
+                            //center side blue
+                        } else {
+                            //center side red
+                        }
+                    }
+                }
+            } else if (!movedForward){
+                angle = FORWARDS;
+                speed = 0.2;
+                if(timer == 0){
+                    timer = leftFront.getCurrentPosition();
+                } else if(leftFront.getCurrentPosition() >= timer + moveForwardDistance){
+                    movedForward = true;
+                    timer = 0;
+                    clawIsOpen = true;
+                    angle = STOP;
+                    speed = 0;
+                }
             }
-
-
 
             //claw
             if(clawIsOpen){
-                claw.setPosition(clawClose);
-            } else{
                 claw.setPosition(clawOpen);
+            } else{
+                claw.setPosition(clawClose);
             }
 
 
 
 
 
-            measuredColor = "blue";
+            if (color.blue() > color.red() && color.blue() > 1){
+                measuredColor = "blue";
+            } else if(color.red() > color.blue() && color.red() > 1){
+                measuredColor = "red";
+            } else {
+                measuredColor = "none";
+            }
+
 
             if (driveAngle != STOP) {
                 if (driveAngle == -SPIN_LEFT || driveAngle == SPIN_RIGHT) {
