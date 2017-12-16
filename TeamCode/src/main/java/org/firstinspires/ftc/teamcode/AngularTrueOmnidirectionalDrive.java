@@ -34,7 +34,9 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -84,6 +86,8 @@ public class AngularTrueOmnidirectionalDrive extends LinearOpMode {
     double clawClose = 0.3;
     double clawOpen = 0.7;
     double liftSpeed = 0.5;
+
+    ColorSensor color;
 
     @Override
     public void runOpMode() {
@@ -141,6 +145,10 @@ public class AngularTrueOmnidirectionalDrive extends LinearOpMode {
 
         verticalLift = hardwareMap.dcMotor.get("verticalLift");
 
+        color = hardwareMap.colorSensor.get("color");
+
+        color.setI2cAddress(I2cAddr.create8bit(0x3C));
+
         //color = hardwareMap.colorSensor.get("color");
         //color.setI2cAddress(I2cAddr.create8bit(0x4c));
 
@@ -162,7 +170,7 @@ public class AngularTrueOmnidirectionalDrive extends LinearOpMode {
             telemetry.addData("Direction:", " " + driveAngle);
             telemetry.addData("Speed: ", speed);
             telemetry.addData("Raw angle: ", angle);
-            //telemetry.addData("Color: ", color.red() + " " + color.green() + " " + color.blue());
+            telemetry.addData("Color: ", color.red() + " " + color.green() + " " + color.blue());
             telemetry.update();
 
 
