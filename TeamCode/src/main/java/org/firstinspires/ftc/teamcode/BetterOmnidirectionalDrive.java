@@ -41,6 +41,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import android.media.MediaPlayer;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
@@ -63,9 +64,13 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
     DcMotor rightBack = null;
     DcMotor verticalLift = null;
     Servo claw = null;
+    Servo claw2 = null;
     Servo arm = null;
 
-
+    MediaPlayer grab;
+    MediaPlayer start_sound;
+    MediaPlayer ult;
+    MediaPlayer power_fist;
     //driving variables
     
     double deadZone = 0.15;
@@ -79,6 +84,8 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
     boolean toggleA = false;
     boolean flag = true;
     boolean flag2 = true;
+    boolean flag3 = false;
+    boolean flag4 = true;
     boolean toggleLB = false;
 
 
@@ -99,6 +106,11 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
+        grab = MediaPlayer.create(hardwareMap.appContext, R.raw.rocket_grab);
+        start_sound = MediaPlayer.create(hardwareMap.appContext, R.raw.blitzcrank_startup);
+        ult = MediaPlayer.create(hardwareMap.appContext, R.raw.ult_sound);
+        power_fist = MediaPlayer.create(hardwareMap.appContext, R.raw.power_fist);
+
 
         leftFront = hardwareMap.dcMotor.get("leftFront");
         rightFront = hardwareMap.dcMotor.get("rightFront");
@@ -106,6 +118,7 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
         rightBack = hardwareMap.dcMotor.get("rightBack");
         verticalLift = hardwareMap.dcMotor.get("verticalLift");
         claw = hardwareMap.servo.get("claw");
+        claw2 = hardwareMap.servo.get("claw2");
         arm = hardwareMap.servo.get("arm");
         //color = hardwareMap.colorSensor.get("color");
         //color.setI2cAddress(I2cAddr.create8bit(0x4c));
@@ -116,6 +129,7 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
         leftBack.setDirection(DcMotor.Direction.FORWARD);
         rightBack.setDirection(DcMotor.Direction.REVERSE);
         verticalLift.setDirection(DcMotor.Direction.REVERSE);
+        claw2.setDirection(Servo.Direction.REVERSE);
 
 
 
@@ -134,7 +148,7 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
 
         waitForStart();
         runtime.reset();
-
+        start_sound.start();
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             FL_motor_position = leftFront.getCurrentPosition();
@@ -240,33 +254,54 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
                 rightBack.setPower(0);
             }
 
+            if(!ult.isPlaying() && gamepad1.y || gamepad2.y)
+            {
+                ult.start();
+            }
+
             //for claw movement
             if ((gamepad1.a && flag) || (gamepad2.a && flag)){
                 toggleA = !toggleA;
                 flag = false;
+
             }
             else if(!gamepad1.a && !gamepad2.a) {
                 flag = true;
             }
             if(!toggleA) {
                 claw.setPosition(0.4);
+                claw2.setPosition(0.4);
+                if(flag3)
+                {
+                    flag3 = false;
+                    grab.start();
+                }
             }
             else{
                 claw.setPosition(0.7);
+                claw2.setPosition(0.7);
+                flag3 = true;
             }
 
             //for lift movement
             if(gamepad1.dpad_up || gamepad2.dpad_up)
             {
                 verticalLift.setPower(verticalLiftSpeed);
+                if(flag4){
+                    flag4 = false;
+                    power_fist.start();
+
+                }
             }
             else if(gamepad1.dpad_down || gamepad2.dpad_down)
             {
                 verticalLift.setPower(-verticalLiftSpeed);
+                flag4 = true;
             }
             else
             {
                 verticalLift.setPower(0);
+                flag4 = true;
             }
 
             //VUFORIA

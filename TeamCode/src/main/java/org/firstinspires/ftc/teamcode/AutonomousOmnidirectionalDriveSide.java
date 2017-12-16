@@ -68,16 +68,17 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
 
     //driving variables
 
-    boolean stage1 = true;
+    boolean stage1 = false;
     boolean left = false;
     boolean right = false;
     boolean center = false;
     boolean red = false;
-    boolean stage2 = false;
+    boolean stage2 = true;
     boolean stage3 = false;
     boolean flag = true;
     double leftFrontPos = 0;
     boolean flag2 = true;
+    boolean flag3 = true;
 
 
 
@@ -287,7 +288,7 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
                     rightBack.setPower(.4);
                     stage3 = true;
                     stage2 = false;
-                } else if (Math.abs(leftFront.getCurrentPosition()) > 280) {
+                } else if (Math.abs(leftFront.getCurrentPosition()) > -1 && flag3) {
                     if (flag) {
                         leftFrontPos = leftFront.getCurrentPosition();
                         flag = false;
@@ -305,6 +306,7 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
                         if (flag2) {
                             leftFrontPos = leftFront.getCurrentPosition();
                             flag2 = false;
+                            flag3 = false;
                         }
                         leftFront.setTargetPosition(leftFront.getCurrentPosition() + 2000);
                         leftFront.setPower(.4);
