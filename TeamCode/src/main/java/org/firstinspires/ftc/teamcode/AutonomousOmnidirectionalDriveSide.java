@@ -33,6 +33,8 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.firstinspires.ftc.teamcode;
 
 
+import android.media.MediaPlayer;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -65,6 +67,7 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
     Servo arm = null;
     ColorSensor color = null;
 
+    MediaPlayer start_sound;
 
     //driving variables
 
@@ -99,6 +102,7 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
+        start_sound = MediaPlayer.create(hardwareMap.appContext, R.raw.blitzcrank_startup);
 
         leftFront = hardwareMap.dcMotor.get("leftFront");
         rightFront = hardwareMap.dcMotor.get("rightFront");
@@ -152,7 +156,7 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
 
         telemetry.addData("Status", "Ready to begin");
         telemetry.update();
-
+        start_sound.start();
         waitForStart();
         runtime.reset();
         color.enableLed(true);

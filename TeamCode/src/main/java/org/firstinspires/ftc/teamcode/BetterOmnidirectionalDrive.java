@@ -146,9 +146,11 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
         telemetry.addData("Status", "Ready to begin");
         telemetry.update();
 
+
+        start_sound.start();
         waitForStart();
         runtime.reset();
-        start_sound.start();
+
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             FL_motor_position = leftFront.getCurrentPosition();
@@ -254,7 +256,7 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
                 rightBack.setPower(0);
             }
 
-            if(!ult.isPlaying() && gamepad1.y || gamepad2.y)
+            if(gamepad1.y || gamepad2.y)
             {
                 ult.start();
             }
