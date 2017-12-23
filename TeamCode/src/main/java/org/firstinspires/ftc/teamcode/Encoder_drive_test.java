@@ -105,7 +105,7 @@ public class Encoder_drive_test extends LinearOpMode {
                 claw.setPosition(0.4);
                 if (runtime.milliseconds() >= 3000 && !liftUp) {
 
-                    verticalLift.setTargetPosition(700);
+                    verticalLift.setTargetPosition(1420);
                     verticalLift.setPower(1);
                 }
 

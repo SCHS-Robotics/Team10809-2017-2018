@@ -271,8 +271,8 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
                 flag = true;
             }
             if(!toggleA) {
-                claw.setPosition(0.4);
-                claw2.setPosition(0.4);
+                claw.setPosition(0.2);
+                claw2.setPosition(0.2);
                 if(flag3)
                 {
                     flag3 = false;
@@ -280,8 +280,8 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
                 }
             }
             else{
-                claw.setPosition(0.7);
-                claw2.setPosition(0.7);
+                claw.setPosition(0.05);
+                claw2.setPosition(0.05);
                 flag3 = true;
             }
 
@@ -291,7 +291,6 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
                 verticalLift.setPower(verticalLiftSpeed);
                 if(flag4){
                     flag4 = false;
-                    power_fist.start();
 
                 }
             }

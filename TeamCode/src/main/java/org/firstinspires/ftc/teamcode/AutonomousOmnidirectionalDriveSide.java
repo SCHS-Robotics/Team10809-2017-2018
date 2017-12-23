@@ -82,6 +82,7 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
     double leftFrontPos = 0;
     boolean flag2 = true;
     boolean flag3 = true;
+    int motorRotation = 7100;
 
 
 
@@ -123,7 +124,11 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
         claw.setDirection(Servo.Direction.FORWARD);
         arm.setDirection(Servo.Direction.FORWARD);
 
-
+        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        verticalLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         leftFront.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         leftBack.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -212,12 +217,13 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
             {
                 telemetry.addData("VuMark", "center", vuMark);
             }
-
+            arm.setPosition(.05);
+            verticalLift.setTargetPosition(2000);
+            verticalLift.setPower(1);
             if(stage1)
             {
 
-                arm.setPosition(.05);
-                 if(color.red() > 1 || color.blue() > 1){
+                 if(color.red() > 1 || color.blue() > 1 && runtime.milliseconds() > 2000){
                      if(color.red() > color.blue()){
                          if (red) {
                              leftFront.setTargetPosition(-300);
@@ -281,7 +287,7 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
 
             if (stage2) {
                 arm.setPosition(.5);
-                if (red && Math.abs(leftFront.getCurrentPosition()) > 280) {
+                if (red && Math.abs(leftFront.getCurrentPosition()) > -1) {
                     leftFront.setTargetPosition(2000);
                     leftFront.setPower(.4);
                     rightFront.setTargetPosition(2000);
@@ -297,13 +303,14 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
                         leftFrontPos = leftFront.getCurrentPosition();
                         flag = false;
                     }
-                    leftFront.setTargetPosition(leftFront.getCurrentPosition() + 5976);
+                    //original = 5976
+                    leftFront.setTargetPosition(leftFront.getCurrentPosition() + motorRotation);
                     leftFront.setPower(.4);
-                    rightFront.setTargetPosition(leftFront.getCurrentPosition() - 5976);
+                    rightFront.setTargetPosition(leftFront.getCurrentPosition() - motorRotation);
                     rightFront.setPower(.4);
-                    leftBack.setTargetPosition(leftFront.getCurrentPosition() + 5976);
+                    leftBack.setTargetPosition(leftFront.getCurrentPosition() + motorRotation);
                     leftBack.setPower(.4);
-                    rightBack.setTargetPosition(leftFront.getCurrentPosition() - 5976);
+                    rightBack.setTargetPosition(leftFront.getCurrentPosition() - motorRotation);
                     rightBack.setPower(.4);
 
                     if (leftFront.getCurrentPosition() - leftFrontPos > 5920) {
