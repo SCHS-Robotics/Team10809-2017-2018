@@ -73,6 +73,7 @@ public class AngularTrueOmnidirectionalDrive extends LinearOpMode {
     DcMotor leftBack = null;
     DcMotor rightBack = null;
     Servo claw = null;
+    Servo claw2 = null;
     DcMotor verticalLift = null;
 
 
@@ -83,9 +84,22 @@ public class AngularTrueOmnidirectionalDrive extends LinearOpMode {
     double speed = 0.5;
     double pi = 3.14159265358979323846264338327950288419716939937510;
 
-    double clawClose = 0.3;
+    double clawClose = 1;
     double clawOpen = 0.7;
+    double claw2Close = 0.0;
+    double claw2Open = 0.3;
     double liftSpeed = 0.5;
+
+    boolean manualControl = true;
+    int encoderInit = 0;
+    double progress = 0;
+
+
+    double wheelDiameter = 1;
+    double robotLength = 20;
+    double robotWidth = 40;
+    int encoderCountsPerRevolution = 1440;
+    double rotate180EncoderDistance = encoderCountsPerRevolution*Math.sqrt((robotLength/2)*(robotLength/2)+(robotWidth/2)*(robotWidth/2))/(wheelDiameter/2);
 
     ColorSensor color;
 
@@ -142,12 +156,13 @@ public class AngularTrueOmnidirectionalDrive extends LinearOpMode {
         rightBack = hardwareMap.dcMotor.get("rightBack");
 
         claw = hardwareMap.servo.get("claw");
+        claw2= hardwareMap.servo.get("claw2");
 
         verticalLift = hardwareMap.dcMotor.get("verticalLift");
 
         color = hardwareMap.colorSensor.get("color");
 
-        color.setI2cAddress(I2cAddr.create8bit(0x3C));
+        color.setI2cAddress(I2cAddr.create8bit(0x39));//0x3C?
 
         //color = hardwareMap.colorSensor.get("color");
         //color.setI2cAddress(I2cAddr.create8bit(0x4c));
@@ -171,6 +186,7 @@ public class AngularTrueOmnidirectionalDrive extends LinearOpMode {
             telemetry.addData("Speed: ", speed);
             telemetry.addData("Raw angle: ", angle);
             telemetry.addData("Color: ", color.red() + " " + color.green() + " " + color.blue());
+            telemetry.addData("180 flip: ", manualControl + " " + rotate180EncoderDistance + " " + progress);
             telemetry.update();
 
 
@@ -186,7 +202,7 @@ public class AngularTrueOmnidirectionalDrive extends LinearOpMode {
                 /* For fun, we also exhibit the navigational pose. In the Relic Recovery game,
                  * it is perhaps unlikely that you will actually need to act on this pose information, but
                  * we illustrate it nevertheless, for completeness. */
-                OpenGLMatrix pose = ((VuforiaTrackableDefaultListener)relicTemplate.getListener()).getPose();
+                OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) relicTemplate.getListener()).getPose();
                 telemetry.addData("Pose", format(pose));
 
                 /* We further illustrate how to decompose the pose into useful rotational and
@@ -205,72 +221,104 @@ public class AngularTrueOmnidirectionalDrive extends LinearOpMode {
                     double rY = rot.secondAngle;
                     double rZ = rot.thirdAngle;
                 }
-            }
-            else {
+            } else {
                 telemetry.addData("VuMark", "not visible");
             }
 
             //claw
-            if(gamepad1.a){
+            if (gamepad1.a) {
                 claw.setPosition(clawClose);
-            } else{
+                //claw2.setPosition(claw2Close);
+            } else {
                 claw.setPosition(clawOpen);
+                //claw2.setPosition(claw2Close);
+            }
+
+            if(gamepad1.b){
+                claw2.setPosition(claw2Close);
+            } else {
+                claw2.setPosition(claw2Open);
             }
 
             //vertical lift
-            if(gamepad1.dpad_up){
+            if (gamepad1.dpad_up) {
                 verticalLift.setPower(liftSpeed);
-            } else if(gamepad1.dpad_down){
+            } else if (gamepad1.dpad_down) {
                 verticalLift.setPower(-liftSpeed);
             } else {
                 verticalLift.setPower(0);
             }
 
 
-
             //angular drive
             angle = Math.atan2(-gamepad1.left_stick_y, gamepad1.left_stick_x);
 
             //displayed angle
-            driveAngle = -180*(angle - pi/2)/pi;
-            while (driveAngle > 360){
-                driveAngle -= 360;
-            }
-            while(driveAngle < 0){
-                driveAngle +=360;
-            }
-
-
-
-            if(Math.abs(gamepad1.right_stick_x) > deadZone) {
-                speed = gamepad1.right_stick_x/2;
-
-                leftFront.setPower(speed);
-                rightFront.setPower(-speed);
-                leftBack.setPower(speed);
-                rightBack.setPower(-speed);
-            } else {
-                if(gamepad1.b){
-                    speed = 0;
-                } else {
-                    if (Math.abs(gamepad1.left_stick_x) > deadZone || Math.abs(gamepad1.left_stick_y) > deadZone) {
-                        speed = Math.min(Math.pow(gamepad1.left_stick_x, 2) + Math.pow(gamepad1.left_stick_y, 2), 1);
-                    } else {
-                        speed = 0;
-                    }
+            if (manualControl) {
+                driveAngle = -180 * (angle - pi / 2) / pi;
+                while (driveAngle > 360) {
+                    driveAngle -= 360;
+                }
+                while (driveAngle < 0) {
+                    driveAngle += 360;
                 }
 
-                leftFront.setPower(speed*Math.sin(pi*(driveAngle+45)/180));
-                rightFront.setPower(speed*Math.cos(pi*(driveAngle+45)/180));
-                leftBack.setPower(speed*Math.cos(pi*(driveAngle+45)/180));
-                rightBack.setPower(speed*Math.sin(pi*(driveAngle+45)/180));
+                if (Math.abs(gamepad1.right_stick_x) > deadZone) {
+                    speed = gamepad1.right_stick_x / 2;
 
-                //leftFront.setPower(speed * Math.cos(angle - pi / 4));
-                //rightFront.setPower(speed * Math.sin(angle - pi / 4));
-                //leftBack.setPower(speed * Math.sin(angle - pi / 4));
-                //rightBack.setPower(speed * Math.cos(angle - pi / 4));
-                
+                    leftFront.setPower(speed);
+                    rightFront.setPower(-speed);
+                    leftBack.setPower(speed);
+                    rightBack.setPower(-speed);
+                } else {
+                    if (false) {
+                        speed = 0;
+                    } else {
+                        if (Math.abs(gamepad1.left_stick_x) > deadZone || Math.abs(gamepad1.left_stick_y) > deadZone) {
+                            speed = Math.min(Math.pow(gamepad1.left_stick_x, 2) + Math.pow(gamepad1.left_stick_y, 2), 1);
+                        } else {
+                            speed = 0;
+                        }
+                    }
+
+                    leftFront.setPower(speed * Math.sin(pi * (driveAngle + 45) / 180));
+                    rightFront.setPower(speed * Math.cos(pi * (driveAngle + 45) / 180));
+                    leftBack.setPower(speed * Math.cos(pi * (driveAngle + 45) / 180));
+                    rightBack.setPower(speed * Math.sin(pi * (driveAngle + 45) / 180));
+                    //leftFront.setPower(speed * Math.cos(angle - pi / 4));
+                    //rightFront.setPower(speed * Math.sin(angle - pi / 4));
+                    //leftBack.setPower(speed * Math.sin(angle - pi / 4));
+                    //rightBack.setPower(speed * Math.cos(angle - pi / 4));
+
+                }
             }
+
+            //for auto spin
+            if (manualControl){
+                if (gamepad1.dpad_left){
+                    manualControl = false;
+                    encoderInit = leftFront.getCurrentPosition();
+                }
+            }
+
+            if (!manualControl){
+                progress = (leftFront.getCurrentPosition() - encoderInit)/rotate180EncoderDistance;
+                if(progress >= 1){
+                    manualControl = true;
+                }
+
+                speed = 0.25;
+
+                driveAngle = (1-progress)*180;
+
+                leftFront.setPower(speed * Math.sin(pi * (driveAngle + 45) / 180) + speed);
+                rightFront.setPower(speed * Math.cos(pi * (driveAngle + 45) / 180) - speed);
+                leftBack.setPower(speed * Math.cos(pi * (driveAngle + 45) / 180) + speed);
+                rightBack.setPower(speed * Math.sin(pi * (driveAngle + 45) / 180) - speed);
+
+            }
+
+
         }
     }
 }
