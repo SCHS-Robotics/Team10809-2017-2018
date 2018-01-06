@@ -217,7 +217,7 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
                 }
             }
 
-            //for top left and bottem right
+            //for top left and bottom right
             else if (g1Ly > deadZone && g1Lx < -deadZone || g1Ly < -deadZone && g1Lx > deadZone) {
                 if (toggleLB){
                 leftBack.setPower((((g1Ly - g1Lx) / 2) * 1.4)/slowFactor);

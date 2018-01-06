@@ -84,10 +84,10 @@ public class AngularTrueOmnidirectionalDrive extends LinearOpMode {
     double speed = 0.5;
     double pi = 3.14159265358979323846264338327950288419716939937510;
 
-    double clawClose = 1;
-    double clawOpen = 0.7;
-    double claw2Close = 0.0;
-    double claw2Open = 0.3;
+    double clawClose = 0.2;
+    double clawOpen = 0.05;
+    double claw2Close = 0.05;
+    double claw2Open = 0.2;
     double liftSpeed = 0.5;
 
     boolean manualControl = true;
