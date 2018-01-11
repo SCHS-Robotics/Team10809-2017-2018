@@ -245,7 +245,7 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
                     leftFront.setPower(((g1Ly + g1Lx) / 2) * 1.4);
                     rightBack.setPower(((g1Ly + g1Lx) / 2) * 1.4);
                 }
-                }
+            }
 
             //to stop
             else {
@@ -275,7 +275,7 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
                 if(grabFlag)
                 {
                     grabFlag = false;
-                    grab.start();
+                    //grab.start();
                 }
             }
             else{
