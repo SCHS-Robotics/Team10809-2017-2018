@@ -82,10 +82,10 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
     int FL_motor_position;
     int FR_motor_position;
     boolean toggleA = false;
-    boolean flag = true;
+    boolean clawFlag = true;
     boolean flag2 = true;
-    boolean flag3 = false;
-    boolean flag4 = true;
+    boolean grabFlag = false;
+    boolean liftFlag = true;
     boolean toggleLB = false;
 
 
@@ -130,8 +130,6 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
         rightBack.setDirection(DcMotor.Direction.REVERSE);
         verticalLift.setDirection(DcMotor.Direction.REVERSE);
         claw2.setDirection(Servo.Direction.REVERSE);
-
-
 
 
 
@@ -233,7 +231,7 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
                 }
             }
 
-            //for top right and bottem left
+            //for top right and bottom left
             else if (g1Ly > deadZone && g1Lx > deadZone || g1Ly < -deadZone && g1Lx < -deadZone) {
                 if(toggleLB){
                     leftBack.setPower(0);
@@ -262,47 +260,47 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
             }
 
             //for claw movement
-            if ((gamepad1.a && flag) || (gamepad2.a && flag)){
+            if ((gamepad1.a && clawFlag) || (gamepad2.a && clawFlag)){
                 toggleA = !toggleA;
-                flag = false;
+                clawFlag = false;
 
             }
             else if(!gamepad1.a && !gamepad2.a) {
-                flag = true;
+                clawFlag = true;
             }
             if(!toggleA) {
                 claw.setPosition(0.2);
                 claw2.setPosition(0.2);
-                if(flag3)
+                if(grabFlag)
                 {
-                    flag3 = false;
+                    grabFlag = false;
                     grab.start();
                 }
             }
             else{
                 claw.setPosition(0.05);
                 claw2.setPosition(0.05);
-                flag3 = true;
+                grabFlag = true;
             }
 
             //for lift movement
             if(gamepad1.dpad_up || gamepad2.dpad_up)
             {
                 verticalLift.setPower(verticalLiftSpeed);
-                if(flag4){
-                    flag4 = false;
+                if(liftFlag){
+                    liftFlag = false;
 
                 }
             }
             else if(gamepad1.dpad_down || gamepad2.dpad_down)
             {
                 verticalLift.setPower(-verticalLiftSpeed);
-                flag4 = true;
+                liftFlag = true;
             }
             else
             {
                 verticalLift.setPower(0);
-                flag4 = true;
+                liftFlag = true;
             }
 
             //VUFORIA
@@ -310,15 +308,16 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
 
 
 
-            if((gamepad1.a || gamepad2.a) && flag )
+            if((gamepad1.a || gamepad2.a) && clawFlag )
             {
                 toggleA = !toggleA;
-                flag = false;
+                clawFlag = false;
             }
             else if (!gamepad1.a && !gamepad2.a)
             {
-                flag = true;
+                clawFlag = true;
             }
+
 
             if((gamepad1.left_bumper || gamepad2.left_bumper) && flag2 )
             {
@@ -332,3 +331,10 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
         }
     }
 }
+//GRACIOUS PROFESSIONALISM GRACIOUS PROFESSIONALISM GRACIOUS PROFESSIONALISM GRACIOUS PROFESSIONALISM GRACIOUS PROFESSIONALISM
+//GRACIOUS PROFESSIONALISM GRACIOUS PROFESSIONALISM GRACIOUS PROFESSIONALISM GRACIOUS PROFESSIONALISM GRACIOUS PROFESSIONALISM
+//GRACIOUS PROFESSIONALISM GRACIOUS PROFESSIONALISM GRACIOUS PROFESSIONALISM GRACIOUS PROFESSIONALISM GRACIOUS PROFESSIONALISM
+//GRACIOUS PROFESSIONALISM GRACIOUS PROFESSIONALISM GRACIOUS PROFESSIONALISM GRACIOUS PROFESSIONALISM GRACIOUS PROFESSIONALISM
+//GRACIOUS PROFESSIONALISM GRACIOUS PROFESSIONALISM GRACIOUS PROFESSIONALISM GRACIOUS PROFESSIONALISM GRACIOUS PROFESSIONALISM
+//GRACIOUS PROFESSIONALISM GRACIOUS PROFESSIONALISM GRACIOUS PROFESSIONALISM GRACIOUS PROFESSIONALISM GRACIOUS PROFESSIONALISM
+//GRACIOUS PROFESSIONALISM GRACIOUS PROFESSIONALISM GRACIOUS PROFESSIONALISM GRACIOUS PROFESSIONALISM GRACIOUS PROFESSIONALISM
