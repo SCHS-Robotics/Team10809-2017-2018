@@ -33,28 +33,22 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.firstinspires.ftc.teamcode;
 
 
+import android.media.MediaPlayer;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import android.media.MediaPlayer;
 
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.robotcore.external.navigation.VuMarkInstanceId;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 
-@TeleOp(name="BetterOmnidirectionalDrive", group="Linear Opmode")  // @Autonomous(...) is the other common choice
+@TeleOp(name="motor testing", group="aMotorTester")  // @Autonomous(...) is the other common choice
 //@Disabled
-public class BetterOmnidirectionalDrive extends LinearOpMode {
+public class MotorTesting extends LinearOpMode {
 
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
@@ -89,10 +83,11 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
     boolean liftFlag = true;
     boolean toggleLB = false;
 
-    double clawOpenPosition = 0.45;
-    double clawClosedPosition = 0.84;
-    double claw2OpenPosition = 0.63;
-    double claw2ClosedPosition = 1;
+    double clawPosition = 0.5;
+    double claw2Position = 0.5;
+    double armPosition = 0.5;
+    double deltaServoPostion = 0.01;
+
 
 
 
@@ -133,7 +128,7 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
         rightFront.setDirection(DcMotor.Direction.REVERSE);
         leftBack.setDirection(DcMotor.Direction.FORWARD);
         rightBack.setDirection(DcMotor.Direction.REVERSE);
-        verticalLift.setDirection(DcMotor.Direction.FORWARD);
+        verticalLift.setDirection(DcMotor.Direction.REVERSE);
         claw2.setDirection(Servo.Direction.REVERSE);
 
 
@@ -164,175 +159,67 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
 
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("left trigger", " " + gamepad1.left_trigger);
+            telemetry.addData("claw position", " " + clawPosition);
+            telemetry.addData("claw2 position", " " + claw2Position);
+            telemetry.addData("arm position", " " + armPosition);
             telemetry.addData("encoder position LF", " " + FL_motor_position);
             telemetry.addData("encoder position RF", " " + FR_motor_position);
+            telemetry.addData("encoder position LB", " " + leftBack.getCurrentPosition());
+            telemetry.addData("encoder position RB", " " + rightBack.getCurrentPosition());
             telemetry.addData("left bumper:", " " + gamepad1.left_bumper);
 
 
             telemetry.addData("Color: ", color.red() + " " + color.green() + " " + color.blue());
             telemetry.update();
 
-            //for rotation
-            if (g1Rx > deadZone || g1Rx < -deadZone) {
-                //for precision movement
-                if (toggleLB) {
-                    leftBack.setPower(g1Rx / slowFactor);
-                    rightFront.setPower(-g1Rx / slowFactor);
-                    leftFront.setPower(g1Rx / slowFactor);
-                    rightBack.setPower(-g1Rx / slowFactor);
-                    telemetry.addData("rotation speed", " " + g1Rx / slowFactor);
-                } else {//for fast movement
-                    leftBack.setPower(g1Rx);
-                    rightFront.setPower(-g1Rx);
-                    leftFront.setPower(g1Rx);
-                    rightBack.setPower(-g1Rx);
-                    telemetry.addData("rotation speed", " " + g1Rx);
-                }
-            }
-
-            //for left and right
-            else if (Math.abs(g1Lx) > deadZone && Math.abs(g1Ly) < deadZone) {
-                if (toggleLB) {
-                    leftBack.setPower(-g1Lx / slowFactor);
-                    rightFront.setPower(-g1Lx / slowFactor);
-                    leftFront.setPower(g1Lx / slowFactor);
-                    rightBack.setPower(g1Lx / slowFactor);
-                } else {
-                    leftBack.setPower(-g1Lx);
-                    rightFront.setPower(-g1Lx);
-                    leftFront.setPower(g1Lx);
-                    rightBack.setPower(g1Lx);
-                }
-            }
-
-            //for up and down
-            else if (Math.abs(g1Ly) > deadZone && Math.abs(g1Lx) < deadZone) {
-                if (toggleLB) {
-                    leftBack.setPower(g1Ly / slowFactor);
-                    rightFront.setPower(g1Ly / slowFactor);
-                    leftFront.setPower(g1Ly / slowFactor);
-                    rightBack.setPower(g1Ly / slowFactor);
-                } else {
-                    leftBack.setPower(g1Ly);
-                    rightFront.setPower(g1Ly);
-                    leftFront.setPower(g1Ly);
-                    rightBack.setPower(g1Ly);
-                }
-            }
-
-            //for top left and bottom right
-            else if (g1Ly > deadZone && g1Lx < -deadZone || g1Ly < -deadZone && g1Lx > deadZone) {
-                if (toggleLB){
-                leftBack.setPower((((g1Ly - g1Lx) / 2) * 1.4)/slowFactor);
-                rightFront.setPower(((g1Ly - g1Lx) / 2) * 1.4);
+            if(gamepad1.dpad_up){
+                leftFront.setPower(0.5);
+            } else {
                 leftFront.setPower(0);
-                rightBack.setPower(0);
-            }else {
-
-                    leftBack.setPower(((g1Ly - g1Lx) / 2) * 1.4);
-                    rightFront.setPower(((g1Ly - g1Lx) / 2) * 1.4);
-                    leftFront.setPower(0);
-                    rightBack.setPower(0);
-                }
             }
 
-            //for top right and bottom left
-            else if (g1Ly > deadZone && g1Lx > deadZone || g1Ly < -deadZone && g1Lx < -deadZone) {
-                if(toggleLB){
-                    leftBack.setPower(0);
-                    rightFront.setPower(0);
-                    leftFront.setPower((((g1Ly + g1Lx) / 2) * 1.4)/slowFactor);
-                    rightBack.setPower((((g1Ly + g1Lx) / 2) * 1.4)/slowFactor);
-                }else {
-                    leftBack.setPower(0);
-                    rightFront.setPower(0);
-                    leftFront.setPower(((g1Ly + g1Lx) / 2) * 1.4);
-                    rightBack.setPower(((g1Ly + g1Lx) / 2) * 1.4);
-                }
-            }
-
-            //to stop
-            else {
+            if (gamepad1.dpad_left){
+                leftBack.setPower(0.5);
+            } else {
                 leftBack.setPower(0);
-                rightFront.setPower(0);
-                leftFront.setPower(0);
+            }
+
+            if (gamepad1.dpad_down){
+                rightBack.setPower(0.5);
+            } else {
                 rightBack.setPower(0);
             }
 
-            if(gamepad1.y || gamepad2.y)
-            {
-                ult.start();
-            }
-
-            //for claw movement
-            if ((gamepad1.a && clawFlag) || (gamepad2.a && clawFlag)){
-                toggleA = !toggleA;
-                clawFlag = false;
-
-            }
-            else if(!gamepad1.a && !gamepad2.a) {
-                clawFlag = true;
-            }
-            if(!toggleA) {
-                claw.setPosition(clawOpenPosition);
-                claw2.setPosition(claw2OpenPosition);
-                if(grabFlag)
-                {
-                    grabFlag = false;
-                    //grab.start();
-                }
-            }
-            else{
-                claw.setPosition(clawClosedPosition);
-                claw2.setPosition(claw2ClosedPosition);
-                grabFlag = true;
-            }
-
-            //for lift movement
-            if(gamepad1.dpad_up || gamepad2.dpad_up)
-            {
-                verticalLift.setPower(verticalLiftSpeed);
-                if(liftFlag){
-                    liftFlag = false;
-
-                }
-            }
-            else if(gamepad1.dpad_down || gamepad2.dpad_down)
-            {
-                verticalLift.setPower(-verticalLiftSpeed);
-                liftFlag = true;
-            }
-            else
-            {
-                verticalLift.setPower(0);
-                liftFlag = true;
-            }
-
-            //VUFORIA
-
-
-
-
-            if((gamepad1.a || gamepad2.a) && clawFlag )
-            {
-                toggleA = !toggleA;
-                clawFlag = false;
-            }
-            else if (!gamepad1.a && !gamepad2.a)
-            {
-                clawFlag = true;
+            if (gamepad1.dpad_right){
+                rightFront.setPower(0.5);
+            } else {
+                rightBack.setPower(0);
             }
 
 
-            if((gamepad1.left_bumper || gamepad2.left_bumper) && flag2 )
-            {
-                toggleLB = !toggleLB;
-                flag2 = false;
+            if (gamepad1.x){
+                clawPosition += deltaServoPostion;
+            } else if(gamepad1.a){
+                clawPosition -= deltaServoPostion;
             }
-            else if (!gamepad1.left_bumper && !gamepad2.left_bumper)
-            {
-                flag2 = true;
+            claw.setPosition(clawPosition);
+
+            if (gamepad1.y){
+                claw2Position += deltaServoPostion;
+            } else if (gamepad1.b){
+                claw2Position -= deltaServoPostion;
             }
+            claw2.setPosition(claw2Position);
+
+            if (gamepad1.right_bumper){
+                armPosition += deltaServoPostion;
+            } else if (gamepad1.left_bumper){
+                armPosition -= deltaServoPostion;
+            }
+            arm.setPosition(armPosition);
+
+
+
         }
     }
 }

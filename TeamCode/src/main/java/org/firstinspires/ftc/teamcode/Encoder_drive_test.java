@@ -112,13 +112,13 @@ public class Encoder_drive_test extends LinearOpMode {
                 if(runtime.milliseconds() >= 6000) {
 
 
-                    leftFront.setTargetPosition(4000);
+                    leftFront.setTargetPosition(7000);
                     leftFront.setPower(1);
-                    rightFront.setTargetPosition(4000);
+                    rightFront.setTargetPosition(7000);
                     rightFront.setPower(1);
-                    leftBack.setTargetPosition(4000);
+                    leftBack.setTargetPosition(7000);
                     leftBack.setPower(1);
-                    rightBack.setTargetPosition(4000);
+                    rightBack.setTargetPosition(7000);
                     rightBack.setPower(1);
                     if (runtime.milliseconds() >= 11000)
                     {

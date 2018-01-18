@@ -54,7 +54,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 
 @TeleOp(name="OmnidirectionalDrive", group="Linear Opmode")  // @Autonomous(...) is the other common choice
-//@Disabled
+@Disabled
 public class OmnidirectionalDrive extends LinearOpMode {
 
     /* Declare OpMode members. */
