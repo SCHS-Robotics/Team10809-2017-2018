@@ -64,8 +64,8 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
     DcMotor leftBack = null;
     DcMotor rightBack = null;
     DcMotor verticalLift = null;
-    Servo claw = null;
-    Servo claw2 = null;
+    Servo Lclaw = null;
+    Servo Rclaw = null;
     Servo arm = null;
     ColorSensor color = null;
 
@@ -88,30 +88,15 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
     boolean left = false;
     boolean right = false;
     boolean center = false;
-<<<<<<< HEAD
-    boolean red = false;
-    boolean stage2 = true;
-    boolean stage3 = false;
-    boolean stage4 = false;
-    boolean stage5 = false;
-=======
     boolean red = true;
->>>>>>> 849576b8b6e4be6db87976e4e78528b660688760
     boolean flag = true;
     boolean flag2 = true;
     boolean flag3 = true;
     boolean flag4 = true;
-<<<<<<< HEAD
-    int motorRotation = 7100;
-    int rightDistance = 1000;
-    int centerDistance = 3000;
-    int leftDistance = 5000;
-=======
     boolean flag5 = true;
     int stagecounter = 0;
     int leftFrontPos = 0;
     int motorRotation = 7100;
->>>>>>> 849576b8b6e4be6db87976e4e78528b660688760
 
 
     public static final String TAG = "Vuforia VuMark Sample";
@@ -136,8 +121,8 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
         rightFront = hardwareMap.dcMotor.get("rightFront");
         leftBack = hardwareMap.dcMotor.get("leftBack");
         rightBack = hardwareMap.dcMotor.get("rightBack");
-        claw = hardwareMap.servo.get("claw");
-        claw2 = hardwareMap.servo.get("claw2");
+        Lclaw = hardwareMap.servo.get("Lclaw");
+        Rclaw = hardwareMap.servo.get("Rclaw");
         arm = hardwareMap.servo.get("arm");
         color = hardwareMap.colorSensor.get("color");
         verticalLift = hardwareMap.dcMotor.get("verticalLift");
@@ -150,8 +135,14 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
         leftBack.setDirection(DcMotor.Direction.FORWARD);
         rightBack.setDirection(DcMotor.Direction.REVERSE);
         verticalLift.setDirection(DcMotor.Direction.FORWARD);
-        claw.setDirection(Servo.Direction.FORWARD);
-        claw2.setDirection(Servo.Direction.REVERSE);
+        if(!red){
+            leftFront.setDirection(DcMotor.Direction.REVERSE);
+            rightFront.setDirection(DcMotor.Direction.FORWARD);
+            leftBack.setDirection(DcMotor.Direction.REVERSE);
+            rightBack.setDirection(DcMotor.Direction.FORWARD);
+        }
+        Lclaw.setDirection(Servo.Direction.FORWARD);
+        Rclaw.setDirection(Servo.Direction.REVERSE);
         arm.setDirection(Servo.Direction.FORWARD);
 
         leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -195,25 +186,16 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
         waitForStart();
         runtime.reset();
         color.enableLed(true);
-        claw.setPosition(0.84);
-        claw2.setPosition(1);
+        Lclaw.setPosition(0.84);
+        Rclaw.setPosition(1);
         //lineSensor.enableLed(true);
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-<<<<<<< HEAD
-
-            telemetry.addData("Red:", " " + color.red());
-            telemetry.addData("Blue:", " " + color.blue());
-            telemetry.addData("Green:", " " + color.green());
-            telemetry.addData("Argb:", " " + color.argb());
-            telemetry.addData("Alpha:", " " + color.alpha());
-=======
             telemetry.addData("Red:", " " + color.red());
             telemetry.addData("Blue:", " " + color.blue());
             telemetry.addData("Green:", " " + color.green());
             telemetry.addData("Dylan:", " is bad");
->>>>>>> 849576b8b6e4be6db87976e4e78528b660688760
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("stage1:", " " + stage1);
             telemetry.addData("stage2:", " " + stage2);
@@ -221,6 +203,7 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
             telemetry.addData("stage4:", " " + stage4);
             telemetry.addData("stage5:", " " + stage5);
             telemetry.addData("stage6:", " " + stage6);
+            telemetry.addData("stage changes:", " " + stagecounter);
 
             //telemetry.addData("Color: ", color.red() + " " + color.green() + " " + color.blue());
             telemetry.update();
@@ -259,125 +242,55 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
             verticalLift.setTargetPosition(2000);
             verticalLift.setPower(1);
             if (stage1) {
-<<<<<<< HEAD
-
                 if (color.red() > 1 || color.blue() > 1 && runtime.milliseconds() > 2000) {
                     if (color.red() > color.blue()) {
-                        if (red) {
-                            leftFront.setTargetPosition(-300);
-                            leftFront.setPower(.4);
-                            rightFront.setTargetPosition(-300);
-                            rightFront.setPower(.4);
-                            leftBack.setTargetPosition(-300);
-                            leftBack.setPower(.4);
-                            rightBack.setTargetPosition(-300);
-                            rightBack.setPower(.4);
-                            stage1 = false;
-                            stage2 = true;
-                        } else {
-                            leftFront.setTargetPosition(300);
-                            leftFront.setPower(.4);
-                            rightFront.setTargetPosition(300);
-                            rightFront.setPower(.4);
-                            leftBack.setTargetPosition(300);
-                            leftBack.setPower(.4);
-                            rightBack.setTargetPosition(300);
-                            rightBack.setPower(.4);
-                            stage1 = false;
-                            stage2 = true;
-=======
-                if (color.red() > 1 || color.blue() > 1 && runtime.milliseconds() > 2000) {
-                    if (color.red() > color.blue()) {
-                        if (red) {
-                            leftFront.setTargetPosition(300);
-                            leftFront.setPower(.4);
-                            rightFront.setTargetPosition(300);
-                            rightFront.setPower(.4);
-                            leftBack.setTargetPosition(300);
-                            leftBack.setPower(.4);
-                            rightBack.setTargetPosition(300);
-                            rightBack.setPower(.4);
-                            stage1 = false;
-                            stage2 = true;
-                            stagecounter ++;
-                        } else {
-                            leftFront.setTargetPosition(-300);
-                            leftFront.setPower(.4);
-                            rightFront.setTargetPosition(-300);
-                            rightFront.setPower(.4);
-                            leftBack.setTargetPosition(-300);
-                            leftBack.setPower(.4);
-                            rightBack.setTargetPosition(-300);
-                            rightBack.setPower(.4);
-                            stage1 = false;
-                            stage2 = true;
-                            stagecounter ++;
->>>>>>> 849576b8b6e4be6db87976e4e78528b660688760
-                        }
+                        leftFront.setTargetPosition(300);
+                        leftFront.setPower(.4);
+                        rightFront.setTargetPosition(300);
+                        rightFront.setPower(.4);
+                        leftBack.setTargetPosition(300);
+                        leftBack.setPower(.4);
+                        rightBack.setTargetPosition(300);
+                        rightBack.setPower(.4);
+                        stage1 = false;
+                        stage2 = true;
+                        stagecounter ++;
                     } else {
-                        if (red) {
-                            leftFront.setTargetPosition(-300);
-                            leftFront.setPower(.4);
-                            rightFront.setTargetPosition(-300);
-                            rightFront.setPower(.4);
-                            leftBack.setTargetPosition(-300);
-                            leftBack.setPower(.4);
-                            rightBack.setTargetPosition(-300);
-                            rightBack.setPower(.4);
-                            stage1 = false;
-                            stage2 = true;
-<<<<<<< HEAD
-=======
-                            stagecounter ++;
->>>>>>> 849576b8b6e4be6db87976e4e78528b660688760
-                        } else {
-                            leftFront.setTargetPosition(300);
-                            leftFront.setPower(.4);
-                            rightFront.setTargetPosition(300);
-                            rightFront.setPower(.4);
-                            leftBack.setTargetPosition(300);
-                            leftBack.setPower(.4);
-                            rightBack.setTargetPosition(300);
-                            rightBack.setPower(.4);
-                            stage1 = false;
-                            stage2 = true;
-<<<<<<< HEAD
-                        }
-
-
+                        leftFront.setTargetPosition(-300);
+                        leftFront.setPower(.4);
+                        rightFront.setTargetPosition(-300);
+                        rightFront.setPower(.4);
+                        leftBack.setTargetPosition(-300);
+                        leftBack.setPower(.4);
+                        rightBack.setTargetPosition(-300);
+                        rightBack.setPower(.4);
+                        stage1 = false;
+                        stage2 = true;
+                        stagecounter ++;
                     }
                 }
-
-
-=======
-                            stagecounter ++;
-                        }
-                    }
-                }
->>>>>>> 849576b8b6e4be6db87976e4e78528b660688760
             }
 
             if (stage2) {
                 arm.setPosition(.5);
-                if (red && Math.abs(leftFront.getCurrentPosition()) > -1) {
-                    if (flag) {
-                        leftFrontPos = leftFront.getCurrentPosition();
-                        flag = false;
-                    }
-                    leftFront.setTargetPosition(leftFrontPos + 3000);
-                    leftFront.setPower(.4);
-                    rightFront.setTargetPosition(leftFrontPos + 3000);
-                    rightFront.setPower(.4);
-                    leftBack.setTargetPosition(leftFrontPos + 3000);
-                    leftBack.setPower(.4);
-                    rightBack.setTargetPosition(leftFrontPos + 3000);
-                    rightBack.setPower(.4);
-                    if(leftFront.getCurrentPosition() - leftFrontPos > 2470) {
-                        stage3 = true;
-                        stage2 = false;
-                        stagecounter ++;
-                    }
-                } else if (Math.abs(leftFront.getCurrentPosition()) > -1 && flag3) {
+                if (flag) {
+                    leftFrontPos = leftFront.getCurrentPosition();
+                    flag = false;
+                }
+                leftFront.setTargetPosition(leftFrontPos + 3000);
+                leftFront.setPower(.4);
+                rightFront.setTargetPosition(leftFrontPos + 3000);
+                rightFront.setPower(.4);
+                leftBack.setTargetPosition(leftFrontPos + 3000);
+                leftBack.setPower(.4);
+                rightBack.setTargetPosition(leftFrontPos + 3000);
+                rightBack.setPower(.4);
+                if(leftFront.getCurrentPosition() - leftFrontPos > 2470) {
+                    stage3 = true;
+                    stage2 = false;
+                    stagecounter ++;
+                }
+                /*else if (Math.abs(leftFront.getCurrentPosition()) > -1 && flag3) {
                     if (flag) {
                         leftFrontPos = leftFront.getCurrentPosition();
                         flag = false;
@@ -393,7 +306,7 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
                         leftBack.setPower(.4);
                         rightBack.setTargetPosition(leftFront.getCurrentPosition() + motorRotation);
                         rightBack.setPower(.4);
-                    }*/
+                    }
 
                     leftFront.setTargetPosition(leftFront.getCurrentPosition() + motorRotation);
                     leftFront.setPower(.4);
@@ -426,18 +339,9 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
                             stagecounter ++;
                         }
                     }
-                }
+                }*/
             }
             if (stage3) {
-<<<<<<< HEAD
-                if (flag4) {
-                    leftFrontPos = leftFront.getCurrentPosition();
-
-                    flag4 = false;
-                }
-                if (right) {
-                    leftFront.setTargetPosition(leftFront.getCurrentPosition() + rightDistance);
-=======
                 if(flag4) {
                     leftFrontPos = leftFront.getCurrentPosition();
                     flag4 = false;
@@ -446,23 +350,13 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
                 //going to the left/right/center hole based off the initial cryptograph
                 if (right) {
                     leftFront.setTargetPosition(leftFront.getCurrentPosition() + 1000);
->>>>>>> 849576b8b6e4be6db87976e4e78528b660688760
                     leftFront.setPower(.4);
-                    rightFront.setTargetPosition(rightFront.getCurrentPosition() + rightDistance);
+                    rightFront.setTargetPosition(rightFront.getCurrentPosition() + 1000);
                     rightFront.setPower(.4);
-                    leftBack.setTargetPosition(leftBack.getCurrentPosition() + rightDistance);
+                    leftBack.setTargetPosition(leftBack.getCurrentPosition() + 1000);
                     leftBack.setPower(.4);
-                    rightBack.setTargetPosition(rightBack.getCurrentPosition() + rightDistance);
+                    rightBack.setTargetPosition(rightBack.getCurrentPosition() + 1000);
                     rightBack.setPower(.4);
-<<<<<<< HEAD
-                    if (leftFrontPos > rightDistance - 20) {
-                        stage4 = true;
-                        stage3 = false;
-                    }
-                }
-                if (center) {
-                    leftFront.setTargetPosition(leftFront.getCurrentPosition() + centerDistance);
-=======
                     if (leftFront.getCurrentPosition() - leftFrontPos > 470) {
                         flag4 = true;
                         stage4 = true;
@@ -490,29 +384,13 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
                 //this one reaches the far box - not the center one
                 else{
                     leftFront.setTargetPosition(leftFront.getCurrentPosition() + 3000);
->>>>>>> 849576b8b6e4be6db87976e4e78528b660688760
                     leftFront.setPower(.4);
-                    rightFront.setTargetPosition(rightFront.getCurrentPosition() + centerDistance);
+                    rightFront.setTargetPosition(rightFront.getCurrentPosition() + 3000);
                     rightFront.setPower(.4);
-                    leftBack.setTargetPosition(leftBack.getCurrentPosition() + centerDistance);
+                    leftBack.setTargetPosition(leftBack.getCurrentPosition() + 3000);
                     leftBack.setPower(.4);
-                    rightBack.setTargetPosition(rightBack.getCurrentPosition() + centerDistance);
+                    rightBack.setTargetPosition(rightBack.getCurrentPosition() + 3000);
                     rightBack.setPower(.4);
-<<<<<<< HEAD
-                    if (leftFrontPos > centerDistance - 20) {
-                        stage4 = true;
-                        stage3 = false;
-                    }
-                }
-                if (left) {
-                    leftFront.setTargetPosition(leftFront.getCurrentPosition() + leftDistance);
-                    leftFront.setPower(.4);
-                    rightFront.setTargetPosition(rightFront.getCurrentPosition() + leftDistance);
-                    rightFront.setPower(.4);
-                    leftBack.setTargetPosition(leftBack.getCurrentPosition() + leftDistance);
-                    leftBack.setPower(.4);
-                    rightBack.setTargetPosition(rightBack.getCurrentPosition() + leftDistance);
-=======
                     if (leftFront.getCurrentPosition() - leftFrontPos > 770) {
                         flag4 = true;
                         stage4 = true;
@@ -526,85 +404,14 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
                     leftFrontPos = leftFront.getCurrentPosition();
                     flag4 = false;
                 }
-                if (red) {
-                    leftFront.setTargetPosition(leftFront.getCurrentPosition() + 800);
-                    leftFront.setPower(.4);
-                    rightFront.setTargetPosition(rightFront.getCurrentPosition() - 800);
-                    rightFront.setPower(.4);
-                    leftBack.setTargetPosition(leftBack.getCurrentPosition() + 800);
-                    leftBack.setPower(.4);
-                    rightBack.setTargetPosition(rightBack.getCurrentPosition() - 800);
-                    rightBack.setPower(.4);
-                } else {
-                    leftFront.setTargetPosition(leftFront.getCurrentPosition() - 800);
-                    leftFront.setPower(.4);
-                    rightFront.setTargetPosition(rightFront.getCurrentPosition() + 800);
-                    rightFront.setPower(.4);
-                    leftBack.setTargetPosition(leftBack.getCurrentPosition() - 800);
-                    leftBack.setPower(.4);
-                    rightBack.setTargetPosition(rightBack.getCurrentPosition() + 800);
->>>>>>> 849576b8b6e4be6db87976e4e78528b660688760
-                    rightBack.setPower(.4);
-                    if (leftFrontPos > leftDistance - 20) {
-                        stage4 = true;
-                        stage3 = false;
-                    }
-                }
-<<<<<<< HEAD
-            }
-            if (stage4) {
-                if (flag4) {
-                    leftFrontPos = leftFront.getCurrentPosition();
-
-                    flag4 = false;
-                }
-                if(red) {
-                    leftFront.setTargetPosition(leftFront.getCurrentPosition() + motorRotation / 2);
-                    leftFront.setPower(.4);
-                    rightFront.setTargetPosition(leftFront.getCurrentPosition() - motorRotation / 2);
-                    rightFront.setPower(.4);
-                    leftBack.setTargetPosition(leftFront.getCurrentPosition() + motorRotation / 2);
-                    leftBack.setPower(.4);
-                    rightBack.setTargetPosition(leftFront.getCurrentPosition() - motorRotation / 2);
-                    rightBack.setPower(.4);
-                    if (leftFrontPos > (motorRotation / 2) - 20) {
-                        stage5 = true;
-                        stage4 = false;
-                    }
-                }
-                else{
-                    leftFront.setTargetPosition(leftFront.getCurrentPosition() - motorRotation / 2);
-                    leftFront.setPower(.4);
-                    rightFront.setTargetPosition(leftFront.getCurrentPosition() + motorRotation / 2);
-                    rightFront.setPower(.4);
-                    leftBack.setTargetPosition(leftFront.getCurrentPosition() - motorRotation / 2);
-                    leftBack.setPower(.4);
-                    rightBack.setTargetPosition(leftFront.getCurrentPosition() + motorRotation / 2);
-                    rightBack.setPower(.4);
-                    if (leftFrontPos >  -(motorRotation / 2) + 20) {
-                        stage5 = true;
-                        stage4 = false;
-                    }
-                }
-            }
-            if (stage5){
-                leftFront.setTargetPosition(leftFront.getCurrentPosition() + 400);
+                leftFront.setTargetPosition(leftFront.getCurrentPosition() + 800);
                 leftFront.setPower(.4);
-                rightFront.setTargetPosition(leftFront.getCurrentPosition() + 400);
+                rightFront.setTargetPosition(rightFront.getCurrentPosition() - 800);
                 rightFront.setPower(.4);
-                leftBack.setTargetPosition(leftFront.getCurrentPosition() + 400);
+                leftBack.setTargetPosition(leftBack.getCurrentPosition() + 800);
                 leftBack.setPower(.4);
-                rightBack.setTargetPosition(leftFront.getCurrentPosition() + 400);
+                rightBack.setTargetPosition(rightBack.getCurrentPosition() - 800);
                 rightBack.setPower(.4);
-            }
-
-
-        }
-    }
-}
-
-
-=======
                 if(Math.abs(leftFront.getCurrentPosition() - leftFrontPos) > 1200) {
                     stage5 = true;
                     stage4 = false;
@@ -626,8 +433,8 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
                 rightBack.setTargetPosition(rightBack.getCurrentPosition() + 3000);
                 rightBack.setPower(.4);
                 if(leftFront.getCurrentPosition() - leftFrontPos > 1990) {
-                    claw.setPosition(0.45);
-                    claw2.setPosition(0.63);
+                    Lclaw.setPosition(0.45);
+                    Rclaw.setPosition(0.63);
                     stage5 = false;
                     stage6 = true;
                     stagecounter ++;
@@ -658,4 +465,3 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
         }
     }
 }
->>>>>>> 849576b8b6e4be6db87976e4e78528b660688760

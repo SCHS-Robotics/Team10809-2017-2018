@@ -188,7 +188,7 @@ public class AngularTrueOmnidirectionalDriveBlueCorner extends LinearOpMode {
         leftBack = hardwareMap.dcMotor.get("leftBack");
         rightBack = hardwareMap.dcMotor.get("rightBack");
 
-        claw = hardwareMap.servo.get("claw");
+        claw = hardwareMap.servo.get("Lclaw");
         verticalLift = hardwareMap.dcMotor.get("verticalLift");
         arm = hardwareMap.servo.get("arm");
 

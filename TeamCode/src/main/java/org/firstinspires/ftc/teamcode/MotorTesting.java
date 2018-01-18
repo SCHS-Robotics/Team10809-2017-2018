@@ -57,8 +57,8 @@ public class MotorTesting extends LinearOpMode {
     DcMotor leftBack = null;
     DcMotor rightBack = null;
     DcMotor verticalLift = null;
-    Servo claw = null;
-    Servo claw2 = null;
+    Servo Lclaw = null;
+    Servo Rclaw = null;
     Servo arm = null;
     ColorSensor color = null;
 
@@ -83,8 +83,8 @@ public class MotorTesting extends LinearOpMode {
     boolean liftFlag = true;
     boolean toggleLB = false;
 
-    double clawPosition = 0.5;
-    double claw2Position = 0.5;
+    double LclawPosition = 0.5;
+    double RclawPosition = 0.5;
     double armPosition = 0.5;
     double deltaServoPostion = 0.01;
 
@@ -117,8 +117,8 @@ public class MotorTesting extends LinearOpMode {
         leftBack = hardwareMap.dcMotor.get("leftBack");
         rightBack = hardwareMap.dcMotor.get("rightBack");
         verticalLift = hardwareMap.dcMotor.get("verticalLift");
-        claw = hardwareMap.servo.get("claw");
-        claw2 = hardwareMap.servo.get("claw2");
+        Lclaw = hardwareMap.servo.get("Lclaw");
+        Rclaw = hardwareMap.servo.get("Rclaw");
         arm = hardwareMap.servo.get("arm");
         color = hardwareMap.colorSensor.get("color");
 
@@ -129,7 +129,7 @@ public class MotorTesting extends LinearOpMode {
         leftBack.setDirection(DcMotor.Direction.FORWARD);
         rightBack.setDirection(DcMotor.Direction.REVERSE);
         verticalLift.setDirection(DcMotor.Direction.REVERSE);
-        claw2.setDirection(Servo.Direction.REVERSE);
+        Rclaw.setDirection(Servo.Direction.REVERSE);
 
 
 
@@ -159,8 +159,8 @@ public class MotorTesting extends LinearOpMode {
 
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("left trigger", " " + gamepad1.left_trigger);
-            telemetry.addData("claw position", " " + clawPosition);
-            telemetry.addData("claw2 position", " " + claw2Position);
+            telemetry.addData("Lclaw position", " " + LclawPosition);
+            telemetry.addData("Rclaw position", " " + RclawPosition);
             telemetry.addData("arm position", " " + armPosition);
             telemetry.addData("encoder position LF", " " + FL_motor_position);
             telemetry.addData("encoder position RF", " " + FR_motor_position);
@@ -198,18 +198,18 @@ public class MotorTesting extends LinearOpMode {
 
 
             if (gamepad1.x){
-                clawPosition += deltaServoPostion;
+                LclawPosition += deltaServoPostion;
             } else if(gamepad1.a){
-                clawPosition -= deltaServoPostion;
+                LclawPosition -= deltaServoPostion;
             }
-            claw.setPosition(clawPosition);
+            Lclaw.setPosition(LclawPosition);
 
             if (gamepad1.y){
-                claw2Position += deltaServoPostion;
+                RclawPosition += deltaServoPostion;
             } else if (gamepad1.b){
-                claw2Position -= deltaServoPostion;
+                RclawPosition -= deltaServoPostion;
             }
-            claw2.setPosition(claw2Position);
+            Rclaw.setPosition(RclawPosition);
 
             if (gamepad1.right_bumper){
                 armPosition += deltaServoPostion;

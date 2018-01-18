@@ -63,15 +63,9 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
     DcMotor leftBack = null;
     DcMotor rightBack = null;
     DcMotor verticalLift = null;
-    Servo relicArmClaw = null;
     Servo Lclaw = null;
     Servo Rclaw = null;
     Servo arm = null;
-<<<<<<< HEAD
-    DcMotor relicArmVertical = null;
-    DcMotor relicArmHorizontal = null;
-=======
->>>>>>> 849576b8b6e4be6db87976e4e78528b660688760
     ColorSensor color = null;
 
     MediaPlayer grab;
@@ -79,7 +73,7 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
     MediaPlayer ult;
     MediaPlayer power_fist;
     //driving variables
-    
+
     double deadZone = 0.15;
     double verticalLiftSpeed = 1;
     int slowFactor = 3;
@@ -94,12 +88,11 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
     boolean grabFlag = false;
     boolean liftFlag = true;
     boolean toggleLB = false;
-    boolean toggleRT = false;
 
     double clawOpenPosition = 0.45;
     double clawClosedPosition = 0.84;
-    double claw2OpenPosition = 0.63;
-    double claw2ClosedPosition = 1;
+    double RclawOpenPosition = 0.63;
+    double RclawClosedPosition = 1;
 
 
 
@@ -132,30 +125,16 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
         Lclaw = hardwareMap.servo.get("Lclaw");
         Rclaw = hardwareMap.servo.get("Rclaw");
         arm = hardwareMap.servo.get("arm");
-<<<<<<< HEAD
-        relicArmVertical = hardwareMap.dcMotor.get("relicArmVertical");
-        relicArmHorizontal = hardwareMap.dcMotor.get("relicArmHorizontal");
-        relicArmClaw = hardwareMap.servo.get("relicArmClaw");
-        color = hardwareMap.colorSensor.get("color");
-        //color.setI2cAddress(I2cAddr.create8bit(0x4c));
-=======
         color = hardwareMap.colorSensor.get("color");
 
->>>>>>> 849576b8b6e4be6db87976e4e78528b660688760
 
 
         leftFront.setDirection(DcMotor.Direction.FORWARD);
         rightFront.setDirection(DcMotor.Direction.REVERSE);
         leftBack.setDirection(DcMotor.Direction.FORWARD);
         rightBack.setDirection(DcMotor.Direction.REVERSE);
-<<<<<<< HEAD
-        verticalLift.setDirection(DcMotor.Direction.REVERSE);
-        Lclaw.setDirection(Servo.Direction.FORWARD);
-        Rclaw.setDirection(Servo.Direction.REVERSE);
-=======
         verticalLift.setDirection(DcMotor.Direction.FORWARD);
-        claw2.setDirection(Servo.Direction.REVERSE);
->>>>>>> 849576b8b6e4be6db87976e4e78528b660688760
+        Rclaw.setDirection(Servo.Direction.REVERSE);
 
 
 
@@ -190,11 +169,7 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
             telemetry.addData("left bumper:", " " + gamepad1.left_bumper);
 
 
-<<<<<<< HEAD
-            telemetry.addData("Color: Red: ", color.red() + " Green: " + color.green() + " Blue: " + color.blue());
-=======
             telemetry.addData("Color: ", color.red() + " " + color.green() + " " + color.blue());
->>>>>>> 849576b8b6e4be6db87976e4e78528b660688760
             telemetry.update();
 
             //for rotation
@@ -248,11 +223,11 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
             //for top left and bottom right
             else if (g1Ly > deadZone && g1Lx < -deadZone || g1Ly < -deadZone && g1Lx > deadZone) {
                 if (toggleLB){
-                leftBack.setPower((((g1Ly - g1Lx) / 2) * 1.4)/slowFactor);
-                rightFront.setPower(((g1Ly - g1Lx) / 2) * 1.4);
-                leftFront.setPower(0);
-                rightBack.setPower(0);
-            }else {
+                    leftBack.setPower((((g1Ly - g1Lx) / 2) * 1.4)/slowFactor);
+                    rightFront.setPower(((g1Ly - g1Lx) / 2) * 1.4);
+                    leftFront.setPower(0);
+                    rightBack.setPower(0);
+                }else {
 
                     leftBack.setPower(((g1Ly - g1Lx) / 2) * 1.4);
                     rightFront.setPower(((g1Ly - g1Lx) / 2) * 1.4);
@@ -298,34 +273,19 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
             else if(!gamepad1.a && !gamepad2.a) {
                 clawFlag = true;
             }
-            //starting position
             if(!toggleA) {
-<<<<<<< HEAD
-                Lclaw.setPosition(0.3);
-                Rclaw.setPosition(0.4);
-
-=======
-                claw.setPosition(clawOpenPosition);
-                claw2.setPosition(claw2OpenPosition);
+                Lclaw.setPosition(clawOpenPosition);
+                Rclaw.setPosition(RclawOpenPosition);
                 if(grabFlag)
                 {
                     grabFlag = false;
                     //grab.start();
                 }
->>>>>>> 849576b8b6e4be6db87976e4e78528b660688760
             }
-            //closed position
             else{
-<<<<<<< HEAD
-                Lclaw.setPosition(0.02);
-                Rclaw.setPosition(0.15);
-
-                grab.start();
-=======
-                claw.setPosition(clawClosedPosition);
-                claw2.setPosition(claw2ClosedPosition);
+                Lclaw.setPosition(clawClosedPosition);
+                Rclaw.setPosition(RclawClosedPosition);
                 grabFlag = true;
->>>>>>> 849576b8b6e4be6db87976e4e78528b660688760
             }
 
             //for lift movement
@@ -372,34 +332,6 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
             else if (!gamepad1.left_bumper && !gamepad2.left_bumper)
             {
                 flag2 = true;
-            }
-            if(Math.abs(gamepad2.right_stick_y) > deadZone){
-
-                relicArmVertical.setPower(gamepad2.right_stick_y);
-
-            }
-            else{
-                relicArmVertical.setPower(0);
-            }
-            if(Math.abs(gamepad2.right_stick_x) > deadZone){
-                relicArmHorizontal.setPower(gamepad2.right_stick_x);
-            }
-            else{
-                relicArmHorizontal.setPower(0);
-            }
-            if (gamepad2.right_trigger > .3 && flag3){
-                toggleRT = !toggleRT;
-                flag3 = false;
-
-            }
-            else if(gamepad2.right_trigger <= 0.3) {
-                flag3 = true;
-            }
-            if(toggleRT){
-                relicArmClaw.setPosition(.5);
-            }
-            else{
-                relicArmClaw.setPosition(.2);
             }
         }
     }
