@@ -69,6 +69,7 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
     Servo arm = null;
     DcMotor relicArmVertical = null;
     DcMotor relicArmHorizontal = null;
+    ColorSensor color = null;
 
     MediaPlayer grab;
     MediaPlayer start_sound;
@@ -127,7 +128,7 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
         relicArmVertical = hardwareMap.dcMotor.get("relicArmVertical");
         relicArmHorizontal = hardwareMap.dcMotor.get("relicArmHorizontal");
         relicArmClaw = hardwareMap.servo.get("relicArmClaw");
-        //color = hardwareMap.colorSensor.get("color");
+        color = hardwareMap.colorSensor.get("color");
         //color.setI2cAddress(I2cAddr.create8bit(0x4c));
 
 
@@ -174,7 +175,7 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
             telemetry.addData("left bumper:", " " + gamepad1.left_bumper);
 
 
-            //telemetry.addData("Color: ", color.red() + " " + color.green() + " " + color.blue());
+            telemetry.addData("Color: Red: ", color.red() + " Green: " + color.green() + " Blue: " + color.blue());
             telemetry.update();
 
             //for rotation
