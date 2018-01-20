@@ -63,9 +63,12 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
     DcMotor leftBack = null;
     DcMotor rightBack = null;
     DcMotor verticalLift = null;
+    DcMotor relicVertical = null;
+    DcMotor relicHorizontal = null;
     Servo Lclaw = null;
     Servo Rclaw = null;
     Servo arm = null;
+    Servo relicClaw = null;
     ColorSensor color = null;
 
     MediaPlayer grab;
@@ -81,6 +84,7 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
     double g1Lx;
     double g1Rx;
     int FL_motor_position;
+    int fL_motor_position2;
     int FR_motor_position;
     boolean toggleA = false;
     boolean clawFlag = true;
@@ -88,6 +92,10 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
     boolean grabFlag = false;
     boolean liftFlag = true;
     boolean toggleLB = false;
+    boolean flag = true;
+    boolean manualOff = false;
+    boolean rSBFlag = true;
+    boolean toggleRSB = true;
 
     double clawOpenPosition = 0.45;
     double clawClosedPosition = 0.84;
@@ -122,8 +130,11 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
         leftBack = hardwareMap.dcMotor.get("leftBack");
         rightBack = hardwareMap.dcMotor.get("rightBack");
         verticalLift = hardwareMap.dcMotor.get("verticalLift");
+        relicVertical = hardwareMap.dcMotor.get("relicVertical");
+        relicHorizontal = hardwareMap.dcMotor.get("relicHorizontal");
         Lclaw = hardwareMap.servo.get("Lclaw");
         Rclaw = hardwareMap.servo.get("Rclaw");
+        relicClaw = hardwareMap.servo.get("relicClaw");
         arm = hardwareMap.servo.get("arm");
         color = hardwareMap.colorSensor.get("color");
 
@@ -171,98 +182,140 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
 
             telemetry.addData("Color: ", color.red() + " " + color.green() + " " + color.blue());
             telemetry.update();
-
-            //for rotation
-            if (g1Rx > deadZone || g1Rx < -deadZone) {
-                //for precision movement
-                if (toggleLB) {
-                    leftBack.setPower(g1Rx / slowFactor);
-                    rightFront.setPower(-g1Rx / slowFactor);
-                    leftFront.setPower(g1Rx / slowFactor);
-                    rightBack.setPower(-g1Rx / slowFactor);
-                    telemetry.addData("rotation speed", " " + g1Rx / slowFactor);
-                } else {//for fast movement
-                    leftBack.setPower(g1Rx);
-                    rightFront.setPower(-g1Rx);
-                    leftFront.setPower(g1Rx);
-                    rightBack.setPower(-g1Rx);
-                    telemetry.addData("rotation speed", " " + g1Rx);
+            if(!manualOff) {
+                //for rotation
+                if (g1Rx > deadZone || g1Rx < -deadZone) {
+                    //for precision movement
+                    if (toggleLB) {
+                        leftBack.setPower(g1Rx / slowFactor);
+                        rightFront.setPower(-g1Rx / slowFactor);
+                        leftFront.setPower(g1Rx / slowFactor);
+                        rightBack.setPower(-g1Rx / slowFactor);
+                        telemetry.addData("rotation speed", " " + g1Rx / slowFactor);
+                    } else {//for fast movement
+                        leftBack.setPower(g1Rx);
+                        rightFront.setPower(-g1Rx);
+                        leftFront.setPower(g1Rx);
+                        rightBack.setPower(-g1Rx);
+                        telemetry.addData("rotation speed", " " + g1Rx);
+                    }
                 }
-            }
 
-            //for left and right
-            else if (Math.abs(g1Lx) > deadZone && Math.abs(g1Ly) < deadZone) {
-                if (toggleLB) {
-                    leftBack.setPower(-g1Lx / slowFactor);
-                    rightFront.setPower(-g1Lx / slowFactor);
-                    leftFront.setPower(g1Lx / slowFactor);
-                    rightBack.setPower(g1Lx / slowFactor);
-                } else {
-                    leftBack.setPower(-g1Lx);
-                    rightFront.setPower(-g1Lx);
-                    leftFront.setPower(g1Lx);
-                    rightBack.setPower(g1Lx);
+                //for left and right
+                else if (Math.abs(g1Lx) > deadZone && Math.abs(g1Ly) < deadZone) {
+                    if (toggleLB) {
+                        leftBack.setPower(-g1Lx / slowFactor);
+                        rightFront.setPower(-g1Lx / slowFactor);
+                        leftFront.setPower(g1Lx / slowFactor);
+                        rightBack.setPower(g1Lx / slowFactor);
+                    } else {
+                        leftBack.setPower(-g1Lx);
+                        rightFront.setPower(-g1Lx);
+                        leftFront.setPower(g1Lx);
+                        rightBack.setPower(g1Lx);
+                    }
                 }
-            }
 
-            //for up and down
-            else if (Math.abs(g1Ly) > deadZone && Math.abs(g1Lx) < deadZone) {
-                if (toggleLB) {
-                    leftBack.setPower(g1Ly / slowFactor);
-                    rightFront.setPower(g1Ly / slowFactor);
-                    leftFront.setPower(g1Ly / slowFactor);
-                    rightBack.setPower(g1Ly / slowFactor);
-                } else {
-                    leftBack.setPower(g1Ly);
-                    rightFront.setPower(g1Ly);
-                    leftFront.setPower(g1Ly);
-                    rightBack.setPower(g1Ly);
+                //for up and down
+                else if (Math.abs(g1Ly) > deadZone && Math.abs(g1Lx) < deadZone) {
+                    if (toggleLB) {
+                        leftBack.setPower(g1Ly / slowFactor);
+                        rightFront.setPower(g1Ly / slowFactor);
+                        leftFront.setPower(g1Ly / slowFactor);
+                        rightBack.setPower(g1Ly / slowFactor);
+                    } else {
+                        leftBack.setPower(g1Ly);
+                        rightFront.setPower(g1Ly);
+                        leftFront.setPower(g1Ly);
+                        rightBack.setPower(g1Ly);
+                    }
                 }
-            }
 
-            //for top left and bottom right
-            else if (g1Ly > deadZone && g1Lx < -deadZone || g1Ly < -deadZone && g1Lx > deadZone) {
-                if (toggleLB){
-                    leftBack.setPower((((g1Ly - g1Lx) / 2) * 1.4)/slowFactor);
-                    rightFront.setPower(((g1Ly - g1Lx) / 2) * 1.4);
-                    leftFront.setPower(0);
-                    rightBack.setPower(0);
-                }else {
+                //for top left and bottom right
+                else if (g1Ly > deadZone && g1Lx < -deadZone || g1Ly < -deadZone && g1Lx > deadZone) {
+                    if (toggleLB) {
+                        leftBack.setPower((((g1Ly - g1Lx) / 2) * 1.4) / slowFactor);
+                        rightFront.setPower(((g1Ly - g1Lx) / 2) * 1.4);
+                        leftFront.setPower(0);
+                        rightBack.setPower(0);
+                    } else {
 
-                    leftBack.setPower(((g1Ly - g1Lx) / 2) * 1.4);
-                    rightFront.setPower(((g1Ly - g1Lx) / 2) * 1.4);
-                    leftFront.setPower(0);
-                    rightBack.setPower(0);
+                        leftBack.setPower(((g1Ly - g1Lx) / 2) * 1.4);
+                        rightFront.setPower(((g1Ly - g1Lx) / 2) * 1.4);
+                        leftFront.setPower(0);
+                        rightBack.setPower(0);
+                    }
                 }
-            }
 
-            //for top right and bottom left
-            else if (g1Ly > deadZone && g1Lx > deadZone || g1Ly < -deadZone && g1Lx < -deadZone) {
-                if(toggleLB){
+                //for top right and bottom left
+                else if (g1Ly > deadZone && g1Lx > deadZone || g1Ly < -deadZone && g1Lx < -deadZone) {
+                    if (toggleLB) {
+                        leftBack.setPower(0);
+                        rightFront.setPower(0);
+                        leftFront.setPower((((g1Ly + g1Lx) / 2) * 1.4) / slowFactor);
+                        rightBack.setPower((((g1Ly + g1Lx) / 2) * 1.4) / slowFactor);
+                    } else {
+                        leftBack.setPower(0);
+                        rightFront.setPower(0);
+                        leftFront.setPower(((g1Ly + g1Lx) / 2) * 1.4);
+                        rightBack.setPower(((g1Ly + g1Lx) / 2) * 1.4);
+                    }
+                }
+
+                //to stop
+                else {
                     leftBack.setPower(0);
                     rightFront.setPower(0);
-                    leftFront.setPower((((g1Ly + g1Lx) / 2) * 1.4)/slowFactor);
-                    rightBack.setPower((((g1Ly + g1Lx) / 2) * 1.4)/slowFactor);
-                }else {
-                    leftBack.setPower(0);
-                    rightFront.setPower(0);
-                    leftFront.setPower(((g1Ly + g1Lx) / 2) * 1.4);
-                    rightBack.setPower(((g1Ly + g1Lx) / 2) * 1.4);
+                    leftFront.setPower(0);
+                    rightBack.setPower(0);
                 }
             }
 
-            //to stop
-            else {
-                leftBack.setPower(0);
-                rightFront.setPower(0);
-                leftFront.setPower(0);
-                rightBack.setPower(0);
+            if(Math.abs(gamepad2.right_stick_y) > .1){
+                relicVertical.setPower(gamepad2.right_stick_y / 4);
+            }
+            else{
+                relicVertical.setPower(0);
+            }
+            if(Math.abs(gamepad2.right_stick_x) > .1){
+                relicHorizontal.setPower(gamepad2.right_stick_x);
+            }
+            else{
+                relicHorizontal.setPower(0);
+            }
+            if(toggleRSB){
+                relicClaw.setPosition(.6);
+            }
+            else{
+                relicClaw.setPosition(.4);
+            }
+            if (gamepad2.right_stick_button && rSBFlag){
+                toggleRSB = !toggleRSB;
+                rSBFlag = false;
+
+            }
+            else if(!gamepad2.right_stick_button) {
+                rSBFlag = true;
             }
 
             if(gamepad1.y || gamepad2.y)
             {
                 ult.start();
+                /*if (flag){
+                    fL_motor_position2 = leftFront.getCurrentPosition();
+                    flag = false;
+                }
+                ult.start();
+                leftBack.setPower(1);
+                rightFront.setPower(-1);
+                leftFront.setPower(1);
+                rightBack.setPower(-1);
+                manualOff = true;*/
             }
+
+            /*if (manualOff && Math.abs(fL_motor_position2) > Math.abs(fL_motor_position2) + 7100){
+                manualOff = false;
+            }*/
 
             //for claw movement
             if ((gamepad1.a && clawFlag) || (gamepad2.a && clawFlag)){
