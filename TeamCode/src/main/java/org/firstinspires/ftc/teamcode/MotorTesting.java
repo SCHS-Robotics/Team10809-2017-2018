@@ -139,7 +139,7 @@ public class MotorTesting extends LinearOpMode {
          * but differ in their instance id information.
          * @see VuMarkInstanceId
          */
-        arm.setPosition(.6);
+
 
         telemetry.addData("Status", "Ready to begin");
         telemetry.update();
@@ -217,8 +217,7 @@ public class MotorTesting extends LinearOpMode {
                 armPosition -= deltaServoPostion;
             }
             arm.setPosition(armPosition);
-
-
+            
 
         }
     }
