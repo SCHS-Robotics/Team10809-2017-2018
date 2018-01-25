@@ -86,7 +86,7 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
     int FL_motor_position;
     int fL_motor_position2;
     int FR_motor_position;
-    int rVTargetPosition;
+    int RVtargetPosition;
     boolean toggleA = false;
     boolean clawFlag = true;
     boolean flag2 = true;
@@ -103,7 +103,7 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
     double RclawOpenPosition = 0.63;
     double RclawClosedPosition = 1;
 
-
+    boolean graciousProfessionalism = true;
 
 
 
@@ -157,7 +157,7 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
          * but differ in their instance id information.
          * @see VuMarkInstanceId
          */
-        arm.setPosition(.5);
+        arm.setPosition(.6);
 
         telemetry.addData("Status", "Ready to begin");
         telemetry.update();
@@ -175,12 +175,14 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
             g1Lx = gamepad1.left_stick_x;
             g1Rx = gamepad1.right_stick_x;
 
+            telemetry.addData("Gracious professionalism:", " " + graciousProfessionalism);
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("left trigger", " " + gamepad1.left_trigger);
             telemetry.addData("encoder position LF", " " + FL_motor_position);
             telemetry.addData("encoder position RF", " " + FR_motor_position);
             telemetry.addData("left bumper:", " " + gamepad1.left_bumper);
-
+            telemetry.addData("RV target position:", " " + RVtargetPosition);
+            telemetry.addData("RV current position:", " " + relicVertical.getCurrentPosition());
 
             telemetry.addData("Color: ", color.red() + " " + color.green() + " " + color.blue());
             telemetry.update();
@@ -274,18 +276,15 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
             }
 
             if(gamepad2.right_stick_y > .1){
-                rVTargetPosition = 900000;
+                RVtargetPosition += 3;
             }
             else if(gamepad2.right_stick_y < -.1){
-                rVTargetPosition = -900000;
-            }
-            else{
-                rVTargetPosition = relicVertical.getCurrentPosition();
+                RVtargetPosition -= 3;
             }
             relicVertical.setPower(.3);
-            relicVertical.setTargetPosition(rVTargetPosition);
-            if(Math.abs(gamepad2.right_stick_x) > .1){
-                relicHorizontal.setPower(gamepad2.right_stick_x);
+            relicVertical.setTargetPosition(RVtargetPosition);
+            if(Math.abs(gamepad2.left_stick_y) > .1){
+                relicHorizontal.setPower(gamepad2.left_stick_y);
             }
             else{
                 relicHorizontal.setPower(0);
