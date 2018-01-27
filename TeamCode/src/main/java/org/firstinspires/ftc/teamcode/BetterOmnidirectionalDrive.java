@@ -139,7 +139,7 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
         arm = hardwareMap.servo.get("arm");
         color = hardwareMap.colorSensor.get("color");
 
-        relicVertical.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        relicVertical.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         leftFront.setDirection(DcMotor.Direction.FORWARD);
         rightFront.setDirection(DcMotor.Direction.REVERSE);
@@ -276,14 +276,15 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
             }
 
             if(gamepad2.right_stick_y > .1){
-                RVtargetPosition += 3;
+                relicVertical.setPower(.4);
             }
             else if(gamepad2.right_stick_y < -.1){
-                RVtargetPosition -= 3;
+                relicVertical.setPower(-.4);
             }
-            relicVertical.setPower(.3);
-            relicVertical.setTargetPosition(RVtargetPosition);
-            if(Math.abs(gamepad2.left_stick_y) > .1){
+            else{
+                relicVertical.setPower(0);
+            }
+            if(Math.abs(gamepad2.left_stick_y ) > .1){
                 relicHorizontal.setPower(gamepad2.left_stick_y);
             }
             else{
@@ -295,12 +296,12 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
             else{
                 relicClaw.setPosition(0);
             }
-            if (gamepad2.right_stick_button && rSBFlag){
+            if (gamepad2.right_bumper && rSBFlag){
                 toggleRSB = !toggleRSB;
                 rSBFlag = false;
 
             }
-            else if(!gamepad2.right_stick_button) {
+            else if(!gamepad2.right_bumper) {
                 rSBFlag = true;
             }
 
