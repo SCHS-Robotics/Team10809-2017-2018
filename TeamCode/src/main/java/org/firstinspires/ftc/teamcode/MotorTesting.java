@@ -217,6 +217,9 @@ public class MotorTesting extends LinearOpMode {
                 armPosition -= deltaServoPostion;
             }
             arm.setPosition(armPosition);
+            telemetry.addData("red" , " " + color.red());
+            telemetry.addData("blue" , " " + color.blue());
+            telemetry.addData("green" , " " +color.green());
             
 
         }

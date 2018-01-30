@@ -88,7 +88,7 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
     boolean left = false;
     boolean right = false;
     boolean center = false;
-    boolean red = false;
+    boolean red = true;
     boolean flag = false;
     int stageCounter = 0;
     int leftFrontPos = 0;
@@ -248,25 +248,24 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
                     leftFrontPos = leftFront.getCurrentPosition();
                     flag = true;
                 }
-                if (color.red() > 1 || color.blue() > 1 && runtime.milliseconds() > 3000) {
-                    if ((color.red() - color.blue()) > 50) {
+                if ((color.red() > 1 || color.blue() > 1) && runtime.milliseconds() > 2000) {
+                    if ((color.red() < color.blue())) {
                         if(red) {
-                            leftFront.setPower(-0.05);
-                            rightFront.setPower(-0.05);
-                            leftBack.setPower(-0.05);
-                            rightBack.setPower(-0.05);
+                            leftFront.setPower(-0.15);
+                            rightFront.setPower(-0.15);
+                            leftBack.setPower(+0.15);
+                            rightBack.setPower(+0.15);
                             if (leftFront.getCurrentPosition() - leftFrontPos < -470) {
                                 stage1 = false;
                                 stage2 = true;
                                 stageCounter++;
                             }
                         }else{
-                            leftFront.setPower(0.05);
-                            rightFront.setPower(0.05);
-                            leftBack.setPower(0.05);
-                            rightBack.setPower(0.05);
-                            if (leftFront.getCurrentPosition() - leftFrontPos > 470) {
-                                stage1 = false;
+                            leftFront.setPower(0.15);
+                            rightFront.setPower(0.15);
+                            leftBack.setPower(-0.15);
+                            rightBack.setPower(-0.15);
+                            if (leftFront.getCurrentPosition() - leftFrontPos > 470) {                                stage1 = false;
                                 stage2 = true;
                                 stageCounter++;
                             }
