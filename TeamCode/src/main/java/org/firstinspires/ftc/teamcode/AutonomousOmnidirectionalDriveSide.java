@@ -88,7 +88,7 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
     boolean left = false;
     boolean right = false;
     boolean center = false;
-    boolean red = true;
+    boolean red = false;
     boolean flag = false;
     int stageCounter = 0;
     int leftFrontPos = 0;
@@ -196,6 +196,11 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
             if(runtime.milliseconds() > 1000){
                 verticalLift.setPower(0);
             }
+            if(runtime.milliseconds() > 12000 && stage1){
+                telemetry.addData("Jewel", "fail");
+                stage1 = false;
+                stage2 = true;
+            }
             telemetry.addData("Gracious professionalism:", " " + graciousProfessionalism);
             telemetry.addData("Red:", " " + color.red());
             telemetry.addData("Blue:", " " + color.blue());
@@ -210,6 +215,7 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
             telemetry.addData("stage6:", " " + stage6);
             telemetry.addData("stage changes:", " " + stageCounter);
             telemetry.addData("verticalLift:", " " + verticalLift.getCurrentPosition());
+            telemetry.addData("arm:", " " + arm.getPosition());
             //telemetry.addData("Color: ", color.red() + " " + color.green() + " " + color.blue());
             telemetry.update();
 
@@ -223,7 +229,7 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
              * UNKNOWN will be returned by {@link RelicRecoveryVuMark#from(VuforiaTrackable)}.
              */
             RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
-            if (!center && !left && !right && runtime.milliseconds() > 2000) {
+            if (!center && !left && !right) {
                 if (vuMark == RelicRecoveryVuMark.LEFT) {
 
                     left = true;
@@ -248,35 +254,16 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
                     leftFrontPos = leftFront.getCurrentPosition();
                     flag = true;
                 }
-                if ((color.red() > 1 || color.blue() > 1) && runtime.milliseconds() > 2000) {
-                    if ((color.red() < color.blue())) {
-                        if(red) {
-                            leftFront.setPower(-0.15);
-                            rightFront.setPower(-0.15);
-                            leftBack.setPower(+0.15);
-                            rightBack.setPower(+0.15);
-                            if (leftFront.getCurrentPosition() - leftFrontPos < -470) {
-                                stage1 = false;
-                                stage2 = true;
-                                stageCounter++;
-                            }
-                        }else{
-                            leftFront.setPower(0.15);
-                            rightFront.setPower(0.15);
-                            leftBack.setPower(-0.15);
-                            rightBack.setPower(-0.15);
-                            if (leftFront.getCurrentPosition() - leftFrontPos > 470) {                                stage1 = false;
-                                stage2 = true;
-                                stageCounter++;
-                            }
-                        }
-                    } else {
+                if ((color.red() > 1 || color.blue() > 1) && runtime.milliseconds() > 3000) {
+
+                    if ((color.red() > color.blue())) {
                         if(red) {
                             leftFront.setPower(0.05);
                             rightFront.setPower(0.05);
                             leftBack.setPower(0.05);
                             rightBack.setPower(0.05);
                             if (leftFront.getCurrentPosition() - leftFrontPos > 470) {
+                                arm.setPosition(ARMUP);
                                 stage1 = false;
                                 stage2 = true;
                                 stageCounter++;
@@ -286,7 +273,33 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
                             rightFront.setPower(-0.05);
                             leftBack.setPower(-0.05);
                             rightBack.setPower(-0.05);
+                            //telemetry.addData("Running ", "Blue ");
                             if (leftFront.getCurrentPosition() - leftFrontPos < -470) {
+                                arm.setPosition(ARMUP);
+                                stage1 = false;
+                                stage2 = true;
+                                stageCounter++;
+                            }
+                        }
+                    } else {
+                        if(red) {
+                            leftFront.setPower(-0.05);
+                            rightFront.setPower(-0.05);
+                            leftBack.setPower(-0.05);
+                            rightBack.setPower(-0.05);
+                            if (leftFront.getCurrentPosition() - leftFrontPos < -470) {
+                                arm.setPosition(ARMUP);
+                                stage1 = false;
+                                stage2 = true;
+                                stageCounter++;
+                            }
+                        }else{
+                            leftFront.setPower(0.05);
+                            rightFront.setPower(0.05);
+                            leftBack.setPower(0.05);
+                            rightBack.setPower(0.05);
+                            if (leftFront.getCurrentPosition() - leftFrontPos > 470) {
+                                arm.setPosition(ARMUP);
                                 stage1 = false;
                                 stage2 = true;
                                 stageCounter++;
@@ -405,15 +418,15 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
                         }
                     }
                 }
-                //else is for no reading or center
-                //this one reaches the far box basically every time
+                //else is for no readin
+                //this one reaches the center box basically every time
                 else{
                     if(red) {
                         leftFront.setPower(MOTORPOWER);
                         rightFront.setPower(MOTORPOWER);
                         leftBack.setPower(MOTORPOWER);
                         rightBack.setPower(MOTORPOWER);
-                        if (leftFront.getCurrentPosition() - leftFrontPos > 770) {
+                        if (leftFront.getCurrentPosition() - leftFrontPos > 900) {
                             flag = false;
                             stage4 = true;
                             stage3 = false;
@@ -424,7 +437,7 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
                         rightFront.setPower(-MOTORPOWER);
                         leftBack.setPower(-MOTORPOWER);
                         rightBack.setPower(-MOTORPOWER);
-                        if (leftFront.getCurrentPosition() - leftFrontPos < -770) {
+                        if (leftFront.getCurrentPosition() - leftFrontPos < -900) {
                             flag = false;
                             stage4 = true;
                             stage3 = false;
@@ -443,7 +456,7 @@ public class AutonomousOmnidirectionalDriveSide extends LinearOpMode {
                     leftBack.setPower(MOTORPOWER);
                     rightBack.setPower(-MOTORPOWER);
                     if(red) {
-                        if (Math.abs(leftFront.getCurrentPosition() - leftFrontPos) > 2000) {
+                        if (Math.abs(leftFront.getCurrentPosition() - leftFrontPos) > 1750) {
                             //previous: 1600
                             stage5 = true;
                             stage4 = false;
