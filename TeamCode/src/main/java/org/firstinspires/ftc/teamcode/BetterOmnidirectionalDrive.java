@@ -108,8 +108,7 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
 
     double relicClawOpenPos = 1;
     double relicClawClosePos = 0;
-    double flippedDownPos = 1;
-    double flippedUpPos = 0;
+
 
     boolean graciousProfessionalism = true;
 
@@ -316,10 +315,12 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
             }
 
 
-            if(toggleLSB){
-                relicFlipper.setPosition(flippedDownPos);
+            if(gamepad2.right_stick_y > .1){
+                relicFlipper.setPosition(1);
+            } else if (gamepad2.right_stick_y < -.1) {
+                relicFlipper.setPosition(0);
             } else {
-                relicFlipper.setPosition(flippedUpPos);
+                relicFlipper.setPosition(.5);
             }
             if (gamepad2.left_bumper && lSBFlag){
                 toggleLSB = !toggleLSB;
