@@ -102,7 +102,7 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
     boolean toggleLSB = true;
 
     double clawOpenPosition = 0.45;
-    double clawClosedPosition = 0.84;
+    double clawClosedPosition = 0.79;
     double RclawOpenPosition = 0.63;
     double RclawClosedPosition = 1;
 
@@ -165,7 +165,7 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
          * but differ in their instance id information.
          * @see VuMarkInstanceId
          */
-        arm.setPosition(.6);
+        arm.setPosition(1);
 
         telemetry.addData("Status", "Ready to begin");
         telemetry.update();
@@ -191,6 +191,7 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
             telemetry.addData("left bumper:", " " + gamepad1.left_bumper);
             telemetry.addData("RV target position:", " " + RVtargetPosition);
             //telemetry.addData("RV current position:", " " + relicVertical.getCurrentPosition());
+
 
             telemetry.addData("Color: ", color.red() + " " + color.green() + " " + color.blue());
             telemetry.update();
@@ -415,6 +416,10 @@ public class BetterOmnidirectionalDrive extends LinearOpMode {
             else if (!gamepad1.left_bumper)
             {
                 flag2 = true;
+            }
+
+            if(gamepad2.x){
+                arm.setPosition(1);
             }
         }
     }
